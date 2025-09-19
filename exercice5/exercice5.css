@@ -1,0 +1,30 @@
+/* Partie 4 - Classes CSS */
+.highlight {
+    background-color: yellow; /* surligner un élément */
+    transition: background-color .5s ease;
+}
+
+.hidden {
+    display: none; /* cacher un élément */
+}
+
+.large-text {
+    font-size: 40px; /* augmenter la taille du texte */
+}
+
+.noir {
+    background-color: black;
+    color: white;
+}
+
+.blanc {
+    background-color: white;
+    color: black;
+}
+
+.transe{
+    background-color: orange;
+    width: 300px;
+    transform: rotate(10deg);
+    color: white;
+}
