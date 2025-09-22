@@ -1,0 +1,15 @@
+.color-box.favorite {
+  outline: 3px solid gold;
+  box-shadow: 0 0 6px gold;
+  position: relative;
+}
+
+/* petit badge étoile (optionnel) */
+.color-box.favorite::after {
+  content: "★";
+  position: absolute;
+  right: 4px;
+  top: 2px;
+  font-size: 12px;
+  color: gold;
+}
