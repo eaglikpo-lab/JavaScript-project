@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice 7</title>
+    <link rel="stylesheet" href="exercice7.css">
+</head>
+
+<body>
+    <form id="formulaire">
+        <input type="text" id="title" placeholder="Titre" required>
+        <input type="text" id="description" placeholder="Description">
+        <input type="color" id="color" value="#ff0000">
+        <input type="url" id="image" placeholder="URL de l'image (ex: https://example.com/image.jpg)">
+
+    </form>
+
+    <button id="add-card">Ajouter Carte</button>
+    <button id="clear-cards">Effacer Tout</button>
+    <button id="sort-title">Trier par Titre</button>
+
+    <div id="cards-container">
+        <!--CARDS container-->
+    </div>
+
+    <select id="template-select">
+        <option value="0">Carte A</option>
+        <option value="1">Carte B</option>
+        <option value="2">Carte C</option>
+    </select>
+    <button id="add-template">Ajouter Carte Modèle</button>
+
+
+    <script src="exercice7.js"></script>
+</body>
+</html>
