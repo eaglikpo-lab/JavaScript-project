@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice 8</title>
+    <link rel="stylesheet" href="exercice8.css">
+</head>
+
+<body>
+    <form id="formulaire">
+        <label for="username">Nom d'utilisateur :</label>
+        <input type="text" id="username" name="username" minlength="2" maxlength="50" placeholder="Max 20 caractères" required>
+        <div class="error-message"></div>
+
+        <div class="autocomplete">
+            <label for="email">E-mail :</label>
+            <input type="email" id="email" name="email" placeholder="exemple@domaine.com" autocomplete="off" required>
+            <ul id="suggestions" class="suggestions-list"></ul>
+            <div class="error-message"></div>
+        </div>
+       
+        <label for="phone-number">Téléphone</label>
+        <input type="text" id="phone-number" name="Numero de téléphone" pattern="^(?:\+229|01)(?:\s?\d{2}){4}$" placeholder="Ex: +33123456789 ou 0123456789" required>
+        <div class="error-message"></div>
+
+        <label for="password">Mot de passe</label>
+        <input type="password" id="password" name="password" pattern="^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$" placeholder="Ex: Abcdef12" required>
+        <span id="password-strength"></span>
+        
+        <label for="confirm">Confirmation mot de passe</label>
+        <input type="text" id="confirm" name="confirm" required placeholder="Ex: Abcdef12">
+        <div class="error-message"></div>
+    
+        <label for="birthday">Date de naissance </label>
+        <input type="date" id="birthday" name="Date de naissance" required>
+        <div class="error-message"></div>
+
+        <div>
+            <label for="file">Photo de profil :</label>
+            <input type="file" name="file" required>
+            <div class="error-message"></div>
+        </div>
+
+        <div>
+            <input type="checkbox" id="agree" name="Acceptation des conditions" required>
+            <label for="agree">Acceptation des conditions</label>
+            <div class="error-message"></div>
+        </div>
+
+        <button type="submit">Soumettre</button>
+    
+    </form>
+
+    <div id="form-status"></div>
+
+    <script src="exo8.js"></script>
+    <!--script src="exercice8.js"></script-->
+
+</body>
+</html>

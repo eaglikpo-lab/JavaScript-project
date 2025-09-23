@@ -1,0 +1,55 @@
+#formulaire {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    margin: 20px auto;
+    gap: 10px;
+}
+
+.valid {
+    border: 2px solid green;
+    color: green;
+}
+
+.invalid {
+    border: 2px solid red;
+    color: red;
+}
+
+.pending {
+    border: 2px solid orange;
+    color: orange;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    height: 1.2em; /* pour réserver de l'espace même si pas de message */
+}
+
+#password-strength {
+    height: 1.2em;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+.suggestions-list {
+    border: 1px solid #ccc;
+    max-height: 120px;
+    overflow-y: auto;
+    margin-top: 0;
+    padding-left: 0;
+    list-style: none;
+    position: absolute;
+    background: rgb(125, 118, 118);
+    width: 200px;
+}
+
+.suggestions-list li {
+    padding: 5px;
+    cursor: pointer;
+}
+
+.suggestions-list li:hover {
+    background: #eee;
+}
