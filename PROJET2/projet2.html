@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List Dynamique</title>
+    <link rel="stylesheet" href="projet2.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>📝 Ma To-Do List</h1>
+
+        <!-- Formulaire d’ajout -->
+        <form id="task-form">
+            <input type="text" id="title" placeholder="Nouvelle tâche..." required>
+            <input type="text" id="description" placeholder="Description" required>
+            <select id="priority">
+                <option value="low">Faible</option>
+                <option value="medium" selected>Moyenne</option>
+                <option value="high">Haute</option>
+            </select>
+            <div class="date">
+                <label for="date">Date de fin</label>
+                <input type="date" id="task-date">
+            </div>
+            <button type="submit">Ajouter</button>
+        </form>
+
+        <!-- Liste des tâches -->
+        <ul id="task-list"></ul>
+
+        <label for="task-filter">Filtrer les tâches :</label>
+        <select id="task-filter">
+            <option value="toutes">Toutes</option>
+            <option value="actives">Actives</option>
+            <option value="terminees">Terminées</option>
+            <option value="echues">Échues</option>
+        </select>
+
+
+        <label for="task-sort">Trier par :</label>
+        <select id="task-sort">
+            <option value="creation">Date de création</option>
+            <option value="dueDate">Échéance</option>
+            <option value="priority">Priorité</option>
+            <option value="alphabet">Alphabétique</option>
+        </select>
+
+
+    </div>
+
+    
+
+
+    <!-- Notifications -->
+    <div id="notification"></div>
+
+    <script src="projet2.js"></script>
+</body>
+
+</html>
