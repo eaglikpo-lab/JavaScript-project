@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Jeu de Devinettes</title>
+  <link rel="stylesheet" href="projet3.css">
+</head>
+<body>
+  <div id="app">
+    <h1>🎯 Jeu de Devinettes</h1>
+
+    <!-- Écran d'accueil -->
+    <div id="menu">
+      <h2>Choisis un mode</h2>
+      <select id="mode">
+        <option value="nombre">Nombres</option>
+        <option value="mot">Mots</option>
+        <option value="math">Mathématiques</option>
+        <option value="couleur">Couleurs</option>
+        <option value="multi-joueur">Mode multijoueur loca</option>
+      </select>
+
+      <h2>Difficulté</h2>
+      <select id="difficulte">
+        <option value="facile">Facile</option>
+        <option value="moyen">Moyen</option>
+        <option value="difficile">Difficile</option>
+        <option value="expert">Expert</option>
+      </select>
+
+      <button id="startBtn">Démarrer</button>
+    </div>
+
+    <!-- Zone de jeu -->
+    <div id="game" class="hidden">
+        <h2 id="gameTitle"></h2>
+        <p id="instruction"></p>
+        <input type="text" id="guessInput" placeholder="Ta réponse">
+        <button id="submitGuess">Valider</button>
+        <button id="hintBtn">Indice (-10 pts)</button>
+        <p id="feedback"></p>
+        <p>Tentatives restantes : <span id="tentatives"></span></p>
+        <p>Score : <span id="score">0</span></p>
+        <p id="timer"></p>
+        <button id="restartBtn">Rejouer</button>
+    </div>
+  </div>
+
+  <script src="projet3.js"></script>
+</body>
+</html>
