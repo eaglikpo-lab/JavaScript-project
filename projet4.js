@@ -33,37 +33,63 @@ function validateInput(input, regex, msg) {
   return true;
 }
 
+const groupSelect = document.getElementById("group-select");
+const newGroupInput = document.getElementById("new-group");
+const addGroupBtn = document.getElementById("add-group");
+
+// Ajouter dynamiquement un nouveau groupe
+addGroupBtn.addEventListener("click", () => {
+  const newGroup = newGroupInput.value.trim();
+  if (newGroup !== "") {
+    // Vérifier si ce groupe existe déjà
+    const exists = [...groupSelect.options].some(opt => opt.value.toLowerCase() === newGroup.toLowerCase());
+    if (!exists) {
+      const option = document.createElement("option");
+      option.value = newGroup;
+      option.textContent = newGroup;
+      option.selected = true; // auto-sélectionner
+      groupSelect.appendChild(option);
+    }
+    newGroupInput.value = "";
+  }
+});
+
 form.addEventListener("submit", (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const nom = document.getElementById("nom");
-  const prenom = document.getElementById("prenom");
-  const adresse = document.getElementById("adresse").value;
-  const notes = document.getElementById("notes").value;
+    const nom = document.getElementById("nom");
+    const prenom = document.getElementById("prenom");
+    const adresse = document.getElementById("adresse").value;
+    const notes = document.getElementById("notes").value;
+    const favoris = document.getElementById("favoris").checked; // ✅ récupération
+    
+    let phones = [...phoneContainer.querySelectorAll("input")].map(i => i.value);
+    let emails = [...emailContainer.querySelectorAll("input")].map(i => i.value);
 
-  let phones = [...phoneContainer.querySelectorAll("input")].map(i => i.value);
-  let emails = [...emailContainer.querySelectorAll("input")].map(i => i.value);
+    let groupes = [...groupSelect.selectedOptions].map(opt => opt.value);
 
-  // Validation
-  if (!validateInput(nom, /^[a-zA-ZÀ-ÿ\s-]+$/, "Nom invalide")) return;
-  if (!validateInput(prenom, /^[a-zA-ZÀ-ÿ\s-]+$/, "Prénom invalide")) return;
-  for (let tel of phones) {
-    if (!/^(?:\+229|01)(?:\s?\d{2}){4}$/.test(tel)) { alert("Téléphone invalide"); return; }
-  }
-  for (let mail of emails) {
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) { alert("Email invalide"); return; }
-  }
+    // Validation
+    if (!validateInput(nom, /^[a-zA-ZÀ-ÿ\s-]+$/, "Nom invalide")) return;
+    if (!validateInput(prenom, /^[a-zA-ZÀ-ÿ\s-]+$/, "Prénom invalide")) return;
+    for (let tel of phones) {
+        if (!/^(?:\+229|01)(?:\s?\d{2}){4}$/.test(tel)) { alert("Téléphone invalide"); return; }
+    }
+    for (let mail of emails) {
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) { alert("Email invalide"); return; }
+    }
+        
+    
+    const contact = { 
+        id: Date.now(), nom: nom.value, prenom: prenom.value,
+        phones, emails, adresse, notes, favoris, groupes
+    };
+    
+    contacts.push(contact);
+    renderContacts();
 
-  const contact = { 
-    id: Date.now(), nom: nom.value, prenom: prenom.value,
-    phones, emails, adresse, notes 
-  };
-  contacts.push(contact);
-  renderContacts();
-
-  form.reset();
-  phoneContainer.innerHTML = `<input type="tel" name="telephone[]" required>`;
-  emailContainer.innerHTML = `<input type="email" name="email[]" required>`;
+    form.reset();
+    phoneContainer.innerHTML = `<input type="tel" name="telephone[]" required>`;
+    emailContainer.innerHTML = `<input type="email" name="email[]" required>`;
 });
 
 // Affichage
@@ -87,44 +113,79 @@ form.addEventListener("submit", (e) => {
 }*/
 
 function renderContacts() {
-  container.innerHTML = "";
-  contacts.forEach(c => {
-    const div = document.createElement("div");
-    div.classList.add("contact-item");
-
-    if (container.classList.contains("list-view")) {
-      // Vue liste = aperçu
-      div.innerHTML = `
-        <strong>${c.nom} ${c.prenom}</strong><br>
-        Tel: ${c.phones[0] || "-"} | Mail: ${c.emails[0] || "-"}<br>
-        <button onclick="showDetail(${c.id})">Détails</button>
-        <a href="tel:${c.phones[0]}">📞 Appeler</a>
-        <a href="mailto:${c.emails[0]}">✉️ Email</a>
-      `;
-    } else {
-      // Vue grille = photo + nom
-      div.innerHTML = `
-        <img src="${c.photo || 'https://via.placeholder.com/60'}" class="contact-photo">
-        <div><strong>${c.nom}</strong><br>${c.prenom}</div>
-        <button onclick="showDetail(${c.id})">Details</button>
-      `;
+    container.innerHTML = "";
+    
+    const data = filteredContacts.length || searchInput.value ? filteredContacts : contacts;
+    console.log(data);
+    
+    if (data.length === 0) {
+        container.innerHTML = "<p>Aucun contact trouvé</p>";
+        return;
     }
 
-    container.appendChild(div);
-  });
+    data.forEach(c => {
+        const div = document.createElement("div");
+        div.classList.add("contact-item");
+
+        if (container.classList.contains("list-view")) {
+        // Vue liste = aperçu
+        div.innerHTML = `
+            <strong>${c.nom} ${c.prenom}</strong><br> ${c.favoris ? "⭐" : ""}
+            Tel: ${c.phones[0] || "-"} | Mail: ${c.emails[0] || "-"}<br>
+            <em>Groupes:</em> ${c.groupes && c.groupes.length ? c.groupes.join(", ") : "-"}<br>
+            <button onclick="showDetail(${c.id})">Détails</button>
+            <a href="tel:${c.phones[0]}">📞 Appeler</a>
+            <a href="mailto:${c.emails[0]}">✉️ Email</a>
+        `;
+        } else {
+        // Vue grille = photo + nom
+        div.innerHTML = `
+            <img src="${c.photo || 'https://via.placeholder.com/60'}" class="contact-photo">
+            <div><strong>${c.nom}</strong><br>${c.prenom}</div>
+            <button onclick="showDetail(${c.id})">Details</button>
+
+        
+        `;
+        }
+
+        contactList.appendChild(div);
+    });
 }
 
 // Affichage de la vue détail 
 function showDetail(id) {
   const c = contacts.find(ct => ct.id === id);
-  alert(`
+  /*alert(`
     ${c.nom} ${c.prenom}
     Téléphones: ${c.phones.join(", ")}
     Emails: ${c.emails.join(", ")}
     Adresse: ${c.adresse}
     Notes: ${c.notes}
-  `);
+  `);*/
+    
+    contactList.innerHTML = "";
+    
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <strong>${c.nom} ${c.prenom}</strong><br>
+      <em>Téléphones:</em> ${c.phones.join(", ")}<br>
+      <em>Emails:</em> ${c.emails.join(", ")}<br>
+      <em>Adresse:</em> ${c.adresse || "-"}<br>
+      <em>Notes:</em> ${c.notes || "-"}<br>
+      <div class="actions">
+        <button onclick="editContact(${c.id})">Modifier</button>
+        <button onclick="deleteContact(${c.id})">Supprimer</button>
+      </div>
+    `;
+    container.appendChild(li);
 }
+
+function toggleFavorite(id) {
+  const c = contacts.find(ct => ct.id === id);
+  c.favoris = !c.favoris;
+  renderContacts();
+}
+
 
 // Suppression
 function deleteContact(id) {
@@ -149,23 +210,33 @@ function editContact(id) {
     <label>Emails</label><input type="text" id="edit-emails" value="${c.emails.join(", ")}">
     <label>Adresse</label><input type="text" id="edit-adresse" value="${c.adresse}">
     <label>Notes</label><textarea id="edit-notes">${c.notes}</textarea>
+
+    <label>Groupes</label>
+    <select id="edit-group-select" multiple>
+        ${[...groupSelect.options].map(opt => 
+            `<option value="${opt.value}" ${c.groupes.includes(opt.value) ? "selected" : ""}>${opt.textContent}</option>`
+        ).join("")}
+    </select>
+
     <button type="submit">Sauvegarder</button>
   `;
   modal.style.display = "flex";
 }
 
 editForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const id = parseInt(document.getElementById("edit-id").value);
-  const c = contacts.find(ct => ct.id === id);
-  c.nom = document.getElementById("edit-nom").value;
-  c.prenom = document.getElementById("edit-prenom").value;
-  c.phones = document.getElementById("edit-phones").value.split(",").map(p => p.trim());
-  c.emails = document.getElementById("edit-emails").value.split(",").map(m => m.trim());
-  c.adresse = document.getElementById("edit-adresse").value;
-  c.notes = document.getElementById("edit-notes").value;
-  modal.style.display = "none";
-  renderContacts();
+    e.preventDefault();
+    const id = parseInt(document.getElementById("edit-id").value);
+    const c = contacts.find(ct => ct.id === id);
+    c.nom = document.getElementById("edit-nom").value;
+    c.prenom = document.getElementById("edit-prenom").value;
+    c.phones = document.getElementById("edit-phones").value.split(",").map(p => p.trim());
+    c.emails = document.getElementById("edit-emails").value.split(",").map(m => m.trim());
+    c.adresse = document.getElementById("edit-adresse").value;
+    c.notes = document.getElementById("edit-notes").value;
+    
+    c.groupes = [...document.getElementById("edit-group-select").selectedOptions].map(opt => opt.value);
+    modal.style.display = "none";
+    renderContacts();
 });
 
 closeModal.onclick = () => modal.style.display = "none";
@@ -188,6 +259,33 @@ btnGridView.addEventListener("click", () => {
 });
 
 
+// Gestion de la recherche
+const searchInput = document.getElementById("search");
+let filteredContacts = [];
+
+searchInput.addEventListener("input", () => {
+    const keyword = searchInput.value.trim().toLowerCase();
+
+    if (keyword.trim() === "") {
+        filteredContacts = contacts;
+    } else {
+        filteredContacts = contacts.filter(contact => {
+            return (
+                contact.nom.toLowerCase().includes(keyword) ||
+                contact.prenom.toLowerCase().includes(keyword) ||
+                contact.phones.some(p => p.includes(keyword)) ||
+                contact.emails.some(p => p.toLowerCase().includes(keyword))
+            );
+        });
+    }
+
+    renderContacts();
+});
 
 
+
+/*document.getElementById("show-favorites").addEventListener("click", () => {
+  filteredContacts = contacts.filter(c => c.favoris);
+  renderContacts();
+});*/
 

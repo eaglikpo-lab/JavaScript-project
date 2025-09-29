@@ -44,12 +44,42 @@
             <label>Notes</label>
             <textarea id="notes"></textarea>
         </div>
+
+        <div class="form-group">
+            <label>Groupes (sélection multiple ou ajouter)</label>
+            <select id="group-select" multiple>
+                <option value="famille">famille</option>
+                <option value="travail">travail</option>
+                <option value="amis">amis</option>
+            </select>
+            <div class="inline">
+                <input type="text" id="new-group" placeholder="Nouveau groupe">
+                <button type="button" id="add-group">Ajouter groupe</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="switch">
+                <label for="checkbox">Favoris</label>
+                <input type="checkbox" id="favoris">
+                <span class="slider"></span>
+                <!--button id="show-favorites">Favoris </button-->
+            </label>
+        </div>
+
         <button type="submit">Ajouter Contact</button>
     </form>
 
     <!-- Liste des contacts -->
     <h2>Mes Contacts</h2>
     <ul id="contact-list"></ul>
+
+    
+    <div class="search-bar">
+        <input type="text" id="search" placeholder="Rechercher un contact (nom, téléphone, email)...">
+    </div>
+    
+    <div id="contact-container" class="list-view"></div>
 
     <div class="view-switcher">
         <button id="list-view">Vue Liste</button>

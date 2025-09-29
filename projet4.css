@@ -36,6 +36,11 @@ small {
     font-size: 12px;
     display: none;
 }
+/* container/list/grid */
+#contact-container {
+    max-width: 900px;
+    margin: 18px auto;
+}
 
 #contact-list {
     list-style: none;
@@ -120,4 +125,30 @@ small {
     object-fit: cover;
     background: #ddd;
     margin-bottom: 10px;
+}
+
+.search-bar {
+    max-width: 600px;
+    margin: 15px auto;
+    text-align: center;
+}
+
+.search-bar input {
+    width: 90%;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+/* favori star */
+.star {
+    font-size: 20px;
+    cursor: pointer;
+    margin-right: 8px;
+    color: #999;
+}
+
+.star.active {
+    color: gold;
 }
