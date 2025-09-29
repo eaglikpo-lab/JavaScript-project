@@ -85,6 +85,26 @@
         <button id="list-view">Vue Liste</button>
         <button id="grid-view">Vue Grille</button>
     </div>
+
+    <div>
+        <label for="contact-filter">Filtrer par :</label>
+        <select id="contact-filter">
+            <option value="first-letter">première lettre</option>
+            <option value="group">groupe</option>
+            <option value="favoris">favoris</option>
+        </select>
+    </div>
+
+    <div>
+        <label for="contact-sort">Trier par :</label>
+        <select id="contact-sort">
+            <option value="nom">Nom (A → Z)</option>
+            <option value="date-ajout">Date d’ajout</option>
+            <option value="date-modif">Dernière modification</option>
+        </select>
+    </div>
+
+    
     
     <!-- Conteneur des contacts -->
     <div id="contact-container" class="list-view"></div>

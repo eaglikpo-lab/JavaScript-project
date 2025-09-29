@@ -195,32 +195,81 @@ function deleteContact(id) {
   }
 }
 
+const filterSelect = document.getElementById("contact-filter");
+
+function applyFilter() {    // Fonction de filtrage
+    const filterValue = filterSelect.value;
+
+    let filteredContacts = contacts; // contacts est ton tableau global
+
+    if (filterValue === "first-letter") {
+        const letter = prompt("Entrer la première lettre :").toLowerCase();
+        filteredContacts = contacts.filter(c => c.nom.toLowerCase().startsWith(letter));
+    } 
+    else if (filterValue === "group") {
+        const group = prompt("Entrer un groupe (famille, travail, amis...) :").toLowerCase();
+        filteredContacts = contacts.filter(c => c.groupes && c.groupes.includes(group));
+    } 
+    else if (filterValue === "favoris") {
+        filteredContacts = contacts.filter(c => c.favoris);
+    }
+
+    renderContacts(filteredContacts);
+}
+
+
+const sortSelect = document.getElementById("contact-sort");
+
+function applySort() {  // Fonction de tri
+    const sortValue = sortSelect.value;
+
+    let sortedContacts = [...contacts]; // on clone le tableau pour ne pas le modifier directement
+
+    if (sortValue === "nom") {
+        sortedContacts.sort((a, b) => a.nom.localeCompare(b.nom));
+    } 
+    else if (sortValue === "date-ajout") {
+        sortedContacts.sort((a, b) => new Date(a.dateAjout) - new Date(b.dateAjout));
+    } 
+    else if (sortValue === "date-modif") {
+        sortedContacts.sort((a, b) => new Date(b.dateModif) - new Date(a.dateModif));
+    }
+
+    renderContacts();
+}
+
+
+sortSelect.addEventListener("change", applySort);   // déclenche le tri quand on change de critère
+
+filterSelect.addEventListener("change", applyFilter);   // Quand l’utilisateur change le filtre
+
+
 // Edition via modal
 const modal = document.getElementById("edit-modal");
 const editForm = document.getElementById("edit-form");
 const closeModal = document.getElementById("close-modal");
 
 function editContact(id) {
-  const c = contacts.find(ct => ct.id === id);
-  editForm.innerHTML = `
-    <input type="hidden" id="edit-id" value="${c.id}">
-    <label>Nom</label><input type="text" id="edit-nom" value="${c.nom}">
-    <label>Prénom</label><input type="text" id="edit-prenom" value="${c.prenom}">
-    <label>Téléphones</label><input type="text" id="edit-phones" value="${c.phones.join(", ")}">
-    <label>Emails</label><input type="text" id="edit-emails" value="${c.emails.join(", ")}">
-    <label>Adresse</label><input type="text" id="edit-adresse" value="${c.adresse}">
-    <label>Notes</label><textarea id="edit-notes">${c.notes}</textarea>
+    const c = contacts.find(ct => ct.id === id);
+    editForm.innerHTML = `
+        <input type="hidden" id="edit-id" value="${c.id}">
+        <label>Nom</label><input type="text" id="edit-nom" value="${c.nom}">
+        <label>Prénom</label><input type="text" id="edit-prenom" value="${c.prenom}">
+        <label>Téléphones</label><input type="text" id="edit-phones" value="${c.phones.join(", ")}">
+        <label>Emails</label><input type="text" id="edit-emails" value="${c.emails.join(", ")}">
+        <label>Adresse</label><input type="text" id="edit-adresse" value="${c.adresse}">
+        <label>Notes</label><textarea id="edit-notes">${c.notes}</textarea>
 
-    <label>Groupes</label>
-    <select id="edit-group-select" multiple>
-        ${[...groupSelect.options].map(opt => 
-            `<option value="${opt.value}" ${c.groupes.includes(opt.value) ? "selected" : ""}>${opt.textContent}</option>`
-        ).join("")}
-    </select>
+        <label>Groupes</label>
+        <select id="edit-group-select" multiple>
+            ${[...groupSelect.options].map(opt => 
+                `<option value="${opt.value}" ${c.groupes.includes(opt.value) ? "selected" : ""}>${opt.textContent}</option>`
+            ).join("")}
+        </select>
 
-    <button type="submit">Sauvegarder</button>
-  `;
-  modal.style.display = "flex";
+        <button type="submit">Sauvegarder</button>
+    `;
+    modal.style.display = "flex";
 }
 
 editForm.addEventListener("submit", (e) => {
