@@ -67,7 +67,7 @@ form.addEventListener("submit", (e) => {
 });
 
 // Affichage
-function renderContacts() {
+/*function renderContacts() {
   contactList.innerHTML = "";
   contacts.forEach(c => {
     const li = document.createElement("li");
@@ -84,6 +84,46 @@ function renderContacts() {
     `;
     contactList.appendChild(li);
   });
+}*/
+
+function renderContacts() {
+  container.innerHTML = "";
+  contacts.forEach(c => {
+    const div = document.createElement("div");
+    div.classList.add("contact-item");
+
+    if (container.classList.contains("list-view")) {
+      // Vue liste = aperçu
+      div.innerHTML = `
+        <strong>${c.nom} ${c.prenom}</strong><br>
+        Tel: ${c.phones[0] || "-"} | Mail: ${c.emails[0] || "-"}<br>
+        <button onclick="showDetail(${c.id})">Détails</button>
+        <a href="tel:${c.phones[0]}">📞 Appeler</a>
+        <a href="mailto:${c.emails[0]}">✉️ Email</a>
+      `;
+    } else {
+      // Vue grille = photo + nom
+      div.innerHTML = `
+        <img src="${c.photo || 'https://via.placeholder.com/60'}" class="contact-photo">
+        <div><strong>${c.nom}</strong><br>${c.prenom}</div>
+        <button onclick="showDetail(${c.id})">Details</button>
+      `;
+    }
+
+    container.appendChild(div);
+  });
+}
+
+// Affichage de la vue détail 
+function showDetail(id) {
+  const c = contacts.find(ct => ct.id === id);
+  alert(`
+    ${c.nom} ${c.prenom}
+    Téléphones: ${c.phones.join(", ")}
+    Emails: ${c.emails.join(", ")}
+    Adresse: ${c.adresse}
+    Notes: ${c.notes}
+  `);
 }
 
 // Suppression
@@ -130,3 +170,24 @@ editForm.addEventListener("submit", (e) => {
 
 closeModal.onclick = () => modal.style.display = "none";
 window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; };
+
+
+
+const container = document.getElementById("contact-container");
+const btnListView = document.getElementById("list-view");
+const btnGridView = document.getElementById("grid-view");
+
+btnListView.addEventListener("click", () => {
+  container.className = "list-view";
+  renderContacts();
+});
+
+btnGridView.addEventListener("click", () => {
+  container.className = "grid-view";
+  renderContacts();
+});
+
+
+
+
+
