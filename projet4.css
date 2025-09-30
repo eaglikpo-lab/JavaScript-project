@@ -152,3 +152,20 @@ small {
 .star.active {
     color: gold;
 }
+
+.tag {
+    display: inline-block;
+    background: #eee;
+    border-radius: 12px;
+    padding: 3px 8px;
+    margin: 2px;
+    font-size: 0.8em;
+   /* border: 1px solid goldenrod;*/
+}
+
+.tag button {
+    border: none;
+    background: transparent;
+    margin-left: 5px;
+    cursor: pointer;
+}
