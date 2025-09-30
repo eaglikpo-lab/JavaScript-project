@@ -233,8 +233,21 @@ function renderContact(c) {
 
 // Affichage de la vue détail 
 function showDetail(id) {
-    const c = contacts.find(ct => ct.id === id);  
+    const c = contacts.find(ct => parseInt(ct.id) === parseInt(id));  
     contactList.innerHTML = "";
+    console.log('contact dans showdetails' + contacts);
+
+   /* function handleImportedData(data) { // data supposé être un tableau d'objets
+        console.log("Type de chaque contact importé :");
+        data.forEach((c, i) => {
+            console.log(`Contact #${i}:`, c);
+            console.log("Nom:", typeof c.nom, "| Prénom:", typeof c.prenom);
+            console.log("Phones:", Array.isArray(c.phones), "Emails:", Array.isArray(c.emails));
+            console.log("Groupes:", Array.isArray(c.groupes), "Tags:", Array.isArray(c.tags));
+            console.log("Date ajout:", c.dateAjout instanceof Date, "Dernière modif:", c.derniereModif instanceof Date);
+        });
+    }
+    handleImportedData(contacts);*/
     
     const li = document.createElement("li");
     li.innerHTML = `
@@ -335,7 +348,7 @@ let editPhones = [];
 let editEmails = [];
 
 function editContact(id) {
-    const c = contacts.find(ct => ct.id === id);
+    const c = contacts.find(ct => parseInt(ct.id) === parseInt(id));
 
     editTags = [...(c.tags || [])];
     editPhones = [...(c.phones || [])];
@@ -475,7 +488,7 @@ editForm.addEventListener("submit", (e) => {
     e.preventDefault();
 
     const id = parseInt(document.getElementById("edit-id").value);
-    const c = contacts.find(ct => ct.id === id);
+    const c = contacts.find(ct => parseInt(ct.id) === parseInt(id));
 
     c.nom = document.getElementById("edit-nom").value;
     c.prenom = document.getElementById("edit-prenom").value;
@@ -536,5 +549,146 @@ searchInput.addEventListener("input", () => {
 
     renderContacts( researchContacts);
 });
+
+
+function importJSON(text) {
+        console.log("Import lancé");
+    try {
+        const imported = JSON.parse(text);
+        //console.log(imported);
+        console.log("Après parse :", imported);
+        imported.forEach(c => {
+            c.id = parseInt(c.id);
+            // Optionnel : vérifier qu’il n’y a pas déjà le même id
+            if (!contacts.some(existing => existing.id === c.id)) {
+                // On reconvertit les dates si besoin
+                c.dateAjout = new Date(c.dateAjout);
+                c.derniereModif = new Date(c.derniereModif);
+                contacts.push(c);
+            }
+        });
+
+        renderContacts();
+        alert("Import JSON terminé !");
+    } catch (err) {
+        alert("Erreur JSON : " + err.message);
+    }
+}
+
+
+
+const importFileInput = document.getElementById("import-file");
+const importBtn = document.getElementById("import-btn");
+
+importBtn.addEventListener("click", () => {
+    const file = importFileInput.files[0];
+    if (!file) return alert("Veuillez sélectionner un fichier !");
+
+    console.log("Contacts avant import :", contacts);
+
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+        const content = e.target.result;
+        
+        if (file.name.endsWith(".json")) {
+            importJSON(content);
+        } else if (file.name.endsWith(".csv")) {
+            importCSV(content);
+        } else {
+            alert("Format non supporté !");
+        }
+    };
+    
+    reader.readAsText(file);
+});
+
+function importCSV(text) {
+    console.log("Import lancé");
+    const lines = text.trim().split("\n");
+    const headers = lines.shift().split(",").map(h => h.trim());
+
+    lines.forEach(line => {
+        const values = parseCSVLine(line); // fonction qui gère les champs entre guillemets
+        const obj = {};
+        headers.forEach((h, i) => {
+            let v = values[i] || "";
+            if (["phones","emails","groupes","tags"].includes(h)) v = v.split(";").filter(s => s);
+            if (["favoris"].includes(h)) v = v.toLowerCase() === "true";
+            if (["dateAjout","derniereModif"].includes(h)) v = new Date(v);
+            obj[h] = v;
+        });
+
+        // Evite doublons par id
+        if (!contacts.some(c => parseInt(c.id) === obj.id)) contacts.push(obj);
+    });
+
+    renderContacts();
+ 
+    console.log(contacts);
+    alert("Import CSV terminé !");
+   
+    
+}
+
+// parse CSV ligne complexe avec guillemets
+function parseCSVLine(line) {
+    const regex = /(".*?"|[^",]+)(?=\s*,|\s*$)/g;
+    const matches = [];
+    let match;
+    while ((match = regex.exec(line)) !== null) {
+        matches.push(match[1].replace(/^"|"$/g, ''));
+    }
+    return matches;
+}
+
+
+
+
+
+// Export de fichier CSV/JSON
+function exportJSON() {
+    const dataStr = JSON.stringify(contacts, null, 2); // indentation 2 espaces
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "contacts.json";
+    a.click();
+
+    URL.revokeObjectURL(url);
+}
+
+
+function exportCSV() {
+    // En-têtes
+    const headers = ["id","nom","prenom","phones","emails","adresse","notes","groupes","tags","favoris","dateAjout","derniereModif"];
+    const rows = contacts.map(c => [
+        c.id,
+        `"${c.nom}"`,
+        `"${c.prenom}"`,
+        `"${c.phones.join(";")}"`,
+        `"${c.emails.join(";")}"`,
+        `"${c.adresse}"`,
+        `"${c.notes}"`,
+        `"${c.groupes.join(";")}"`,
+        `"${c.tags.join(";")}"`,
+        c.favoris,
+        c.dateAjout instanceof Date ? c.dateAjout.toISOString() : c.dateAjout,
+        c.derniereModif instanceof Date ? c.derniereModif.toISOString() : c.derniereModif
+    ]);
+
+    const csvContent = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "contacts.csv";
+    a.click();
+
+    URL.revokeObjectURL(url);
+}
 
 
