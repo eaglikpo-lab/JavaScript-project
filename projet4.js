@@ -5,17 +5,41 @@ const phoneContainer = document.getElementById("phone-container");
 const emailContainer = document.getElementById("email-container");
 
 document.getElementById("add-phone").addEventListener("click", () => {
-  const input = document.createElement("input");
-  input.type = "tel";
-  input.name = "telephone[]";
-  phoneContainer.appendChild(input);
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("phone-wrapper");
+
+    const input = document.createElement("input");
+    input.type = "tel";
+    input.name = "telephone[]";
+    //phoneContainer.appendChild(input);
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = "❌";
+    btn.addEventListener("click", () => wrapper.remove());
+
+    wrapper.appendChild(input);
+    wrapper.appendChild(btn);
+    phoneContainer.appendChild(wrapper);
 });
 
 document.getElementById("add-email").addEventListener("click", () => {
-  const input = document.createElement("input");
-  input.type = "email";
-  input.name = "email[]";
-  emailContainer.appendChild(input);
+
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("phone-wrapper");
+
+    const input = document.createElement("input");
+    input.type = "email";
+    input.name = "email[]";
+    
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = "❌";
+    btn.addEventListener("click", () => wrapper.remove());
+
+    wrapper.appendChild(input);
+    wrapper.appendChild(btn);
+    emailContainer.appendChild(wrapper);
 });
 
 // Tableau pour stocker les contacts
@@ -71,13 +95,25 @@ form.addEventListener("submit", (e) => {
     // Validation
     if (!validateInput(nom, /^[a-zA-ZÀ-ÿ\s-]+$/, "Nom invalide")) return;
     if (!validateInput(prenom, /^[a-zA-ZÀ-ÿ\s-]+$/, "Prénom invalide")) return;
+
     for (let tel of phones) {
-        if (!/^(?:\+229|01)(?:\s?\d{2}){4}$/.test(tel)) { alert("Téléphone invalide"); return; }
+        telRegex = /^\+?\d{6,15}$/;
+        if (tel.trim() !== "" && !telRegex.test(tel)) {
+            alert("Téléphone invalide !");
+            return;
+        }
+        //if (!/^\+?\d{6,15}$/.test(tel)) { alert("Téléphone invalide"); return; }
     }
+    
     for (let mail of emails) {
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) { alert("Email invalide"); return; }
-    }
-        
+        mailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (mail.trim() !== "" && !mailRegex.test(mail)) {
+            alert("Email invalide !");
+            return;
+        }
+        //if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) { alert("Email invalide"); return; }
+
+    }    
     
     const contact = { 
         id: Date.now(), nom: nom.value, prenom: prenom.value,
@@ -112,10 +148,20 @@ form.addEventListener("submit", (e) => {
   });
 }*/
 
-function renderContacts() {
+/*function renderContacts(list=null) {
     container.innerHTML = "";
     
-    const data = filteredContacts.length || searchInput.value ? filteredContacts : contacts;
+    //const data = researchContacts.length || searchInput.value ? researchContacts : list || contacts;
+
+    let data;
+    if (searchInput.value) {
+        data = researchContacts;   // résultat de recherche
+    } else if (list) {
+        data = list;               // tri / filtrage
+    } else {
+        data = contacts;           // liste complète
+    }
+
     console.log(data);
     
     if (data.length === 0) {
@@ -148,20 +194,61 @@ function renderContacts() {
         `;
         }
 
-        contactList.appendChild(div);
+        // contactList.appendChild(div);
+        container.appendChild(div);
     });
+}*/
+
+
+// Affiche toute une liste
+function renderContacts(list = contacts) {
+    contactList.innerHTML = "";
+
+    if (list.length === 0) {
+        contactList.innerHTML = "<p>Aucun contact trouvé</p>";
+        return;
+    }
+
+    list.forEach(c => renderContact(c));
 }
+
+// Affiche un seul contact
+function renderContact(c) {
+    const div = document.createElement("div");
+    div.classList.add("contact-item");
+
+    if (container.classList.contains("list-view")) {
+        div.innerHTML = `
+            <strong>${c.nom} ${c.prenom}</strong> ${c.favoris ? "⭐" : ""}<br>
+            Tel: ${c.phones[0] || "-"} | Mail: ${c.emails[0] || "-"}<br>
+            <em>Groupes:</em> ${c.groupes?.length ? c.groupes.join(", ") : "-"}<br>
+            <button onclick="showDetail(${c.id})">Détails</button>
+            <a href="tel:${c.phones[0]}">📞 Appeler</a>
+            <a href="mailto:${c.emails[0]}">✉️ Email</a>
+        `;
+    } else {
+        div.innerHTML = `
+            <img src="${c.photo || 'https://via.placeholder.com/60'}" class="contact-photo">
+            <div><strong>${c.nom}</strong><br>${c.prenom}</div>
+            <button onclick="showDetail(${c.id})">Détails</button>
+        `;
+    }
+
+    contactList.appendChild(div);
+}
+
+
 
 // Affichage de la vue détail 
 function showDetail(id) {
-  const c = contacts.find(ct => ct.id === id);
-  /*alert(`
-    ${c.nom} ${c.prenom}
-    Téléphones: ${c.phones.join(", ")}
-    Emails: ${c.emails.join(", ")}
-    Adresse: ${c.adresse}
-    Notes: ${c.notes}
-  `);*/
+    const c = contacts.find(ct => ct.id === id);
+    /*alert(`
+        ${c.nom} ${c.prenom}
+        Téléphones: ${c.phones.join(", ")}
+        Emails: ${c.emails.join(", ")}
+        Adresse: ${c.adresse}
+        Notes: ${c.notes}
+    `);*/
     
     contactList.innerHTML = "";
     
@@ -191,7 +278,7 @@ function toggleFavorite(id) {
 function deleteContact(id) {
   if (confirm("Supprimer ce contact ?")) {
     contacts = contacts.filter(c => c.id !== id);
-    renderContacts();
+    renderContacts(contacts);
   }
 }
 
@@ -200,18 +287,31 @@ const filterSelect = document.getElementById("contact-filter");
 function applyFilter() {    // Fonction de filtrage
     const filterValue = filterSelect.value;
 
-    let filteredContacts = contacts; // contacts est ton tableau global
+    let filteredContacts = contacts; 
 
-    if (filterValue === "first-letter") {
-        const letter = prompt("Entrer la première lettre :").toLowerCase();
-        filteredContacts = contacts.filter(c => c.nom.toLowerCase().startsWith(letter));
+    if (filterValue === "all") { 
+        renderContacts(filteredContacts);
+    } else if (filterValue === "first-letter") {
+        let letter = prompt("Entrer la première lettre :");
+        if (letter) {
+            letter = letter.toLowerCase();
+            filteredContacts = contacts.filter(c => c.nom.toLowerCase().startsWith(letter));   
+            console.log("filtre lettre "+filteredContacts);
+        }
     } 
     else if (filterValue === "group") {
-        const group = prompt("Entrer un groupe (famille, travail, amis...) :").toLowerCase();
-        filteredContacts = contacts.filter(c => c.groupes && c.groupes.includes(group));
+        let group = prompt("Entrer un groupe (famille, travail, amis...) :");
+        if (group) {
+            group = group.toLowerCase();
+            filteredContacts = contacts.filter(c => c.groupes && c.groupes.includes(group));
+            console.log("filtre groupe"+filteredContacts);
+
+        }
     } 
     else if (filterValue === "favoris") {
         filteredContacts = contacts.filter(c => c.favoris);
+        console.log("filtre fav"+filteredContacts);
+
     }
 
     renderContacts(filteredContacts);
@@ -235,11 +335,14 @@ function applySort() {  // Fonction de tri
         sortedContacts.sort((a, b) => new Date(b.dateModif) - new Date(a.dateModif));
     }
 
-    renderContacts();
+    renderContacts(sortedContacts);
 }
 
 
-sortSelect.addEventListener("change", applySort);   // déclenche le tri quand on change de critère
+sortSelect.addEventListener("change", () => {
+    container.textContent = "";
+    applySort();
+});   // déclenche le tri quand on change de critère
 
 filterSelect.addEventListener("change", applyFilter);   // Quand l’utilisateur change le filtre
 
@@ -285,7 +388,7 @@ editForm.addEventListener("submit", (e) => {
     
     c.groupes = [...document.getElementById("edit-group-select").selectedOptions].map(opt => opt.value);
     modal.style.display = "none";
-    renderContacts();
+    renderContacts(c);
 });
 
 closeModal.onclick = () => modal.style.display = "none";
@@ -310,15 +413,15 @@ btnGridView.addEventListener("click", () => {
 
 // Gestion de la recherche
 const searchInput = document.getElementById("search");
-let filteredContacts = [];
+let researchContacts = [];
 
 searchInput.addEventListener("input", () => {
     const keyword = searchInput.value.trim().toLowerCase();
 
     if (keyword.trim() === "") {
-        filteredContacts = contacts;
+        researchContacts = contacts;
     } else {
-        filteredContacts = contacts.filter(contact => {
+        researchContacts = contacts.filter(contact => {
             return (
                 contact.nom.toLowerCase().includes(keyword) ||
                 contact.prenom.toLowerCase().includes(keyword) ||
@@ -328,13 +431,13 @@ searchInput.addEventListener("input", () => {
         });
     }
 
-    renderContacts();
+    renderContacts( researchContacts);
 });
 
 
 
 /*document.getElementById("show-favorites").addEventListener("click", () => {
-  filteredContacts = contacts.filter(c => c.favoris);
+  researchContacts = contacts.filter(c => c.favoris);
   renderContacts();
 });*/
 
