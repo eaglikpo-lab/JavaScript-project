@@ -1,0 +1,154 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f6fa;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+
+#home {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 600px;
+    text-align: center;
+}
+
+#quizContainer {
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.hidden {
+    display: none;
+}
+
+.hidden-slide {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+.page {
+    width: 80%;
+    margin: 50px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.page h1,
+.page h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.page select,
+.page button {
+    font-size: 16px;
+    padding: 10px 15px;
+    margin-top: 10px;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    background: #3498db;
+    color: #fff;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #2980b9;
+}
+
+#quiz-message {color: rgb(211, 41, 41);}
+
+button {
+    margin: 5px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    background: #0984e3;
+    color: white;
+    cursor: pointer;
+}
+
+
+button:hover {
+    background: #74b9ff;
+}
+
+
+#quiz {
+    margin: 20px 0;
+}
+
+.correct {
+    background-color: #4CAF50 !important;/* vert */
+    color: white !important;
+    font-weight: bold;
+    border: 2px solid #388E3C;
+    transform: scale(1.05);
+    transition: all 0.3s ease;
+}
+
+
+.wrong {
+    background-color: #E53935 !important; /* rouge */
+    color: white !important;
+    font-weight: bold;
+    border: 2px solid #B71C1C;
+    transform: scale(0.95);
+    transition: all 0.3s ease;
+}
+
+#progress {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#prog-bar-container {
+    background-color: #ddd;
+    height: 10px;
+}
+
+#progression-bar,
+#timer,
+#lives {
+    margin-top: 10px;
+    border-radius: 5px;
+
+}
+
+#progression-bar {
+    border: 1px solid rgb(10, 139, 62);
+    height: 10px;
+    max-width: 50%;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+
+.modal.hidden {
+    display: none;
+}

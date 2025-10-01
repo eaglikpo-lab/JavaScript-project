@@ -1,0 +1,5 @@
+[
+  { "type": "qcm", "question": "Capital de la France ?", "options": ["Paris", "Rome", "Berlin"], "answer": [0] },
+  { "type": "vf", "question": "Le soleil est une étoile.", "answer": true },
+  { "type": "text", "question": "Langue parlée en Espagne ?", "variants": ["Espagnol", "espagnol"] }
+]

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Modulaire</title>
+    <link rel="stylesheet" href="projet5.css">
+</head>
+
+<body>
+    <!--div class="quiz-container">
+        <h1></h1>
+        <div id="quiz"></div>
+        <div id="controls">
+            <button id="startBtn">Démarrer le Quiz</button>
+            <button id="editorBtn">Éditeur de Quiz</button>
+        </div>
+
+        <label for="category">Catégorie :</label>
+        <select id="category">
+            <option value="culture">Culture générale</option>
+            <option value="informatique">Informatique</option>
+            <option value="histoire">Histoire</option>
+        </select>
+        <div id="quiz-message"></div>
+
+
+        <div id="progress"></div>
+        <div id="timer"></div>
+        <div id="lives"></div>
+    </div-->
+
+    <!-- PAGE ACCUEIL -->
+    <div id="home">
+        <h1>Quiz Modulaire</h1>
+        <label for="category">Choisir une catégorie :</label>
+        <select id="category">
+            <option value="culture">Culture générale</option>
+            <option value="informatique">Informatique</option>
+            <option value="histoire">Histoire</option>
+        </select>
+        <div id="quiz-message"></div>
+
+        <br><br>
+
+        <!-- Choix du mode -->
+        <label for="mode">Mode de jeu :</label>
+        <select id="mode">
+            <option value="sequentiel">Séquentiel</option>
+            <option value="aleatoire">Aléatoire</option>
+        </select>
+        
+        <br><br>
+        
+        <button id="startBtn">Démarrer le Quiz</button>
+        <button id="editorBtn">Éditeur de Quiz</button>
+
+    </div>
+    
+    <!-- PAGE QUIZ -->
+    <div id="quizPage" class="page hidden">
+        <h2 id="quizTitle"></h2>
+        <div id="quizContainer"></div>
+    
+        <div id="feedback"></div>
+
+        <div id="progress">
+            <div id="timer"></div>
+            <div id="lives">Vies: </div>
+            <div id="score">Score: </div>
+            <!--div id="prog-bar-container"-->
+                <div id="progression-bar"></div>
+            <!--/div-->
+
+        </div>
+    </div>
+
+
+    <!-- Modal Éditeur -->
+    <div id="editorModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Ajouter une Question</h2>
+            <form id="editorForm">
+                <label>Type:
+                    <select id="questionType">
+                        <option value="qcm">QCM</option>
+                        <option value="vf">Vrai/Faux</option>
+                        <option value="text">Texte Libre</option>
+                        <option value="drag">Glisser-Déposer</option>
+                        <option value="image">Image</option>
+                    </select>
+                </label>
+                <label>Question:
+                    <input type="text" id="questionText" required>
+                </label>
+                <button type="submit">Ajouter</button>
+                <button type="button" id="closeEditor">Fermer</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!--script src="projet5.js"></script-->
+    <script src="proj5.js"></script>
+    <script src="data/culture.js"></script>
+    <script src="data/informatique.js"></script>
+    <script src="data/histoire.js"></script>
+
+</body>
+
+</html>
