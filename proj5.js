@@ -23,7 +23,7 @@ document.getElementById("startBtn").addEventListener("click", () => {
 });
 
 
-function startQuiz(category ="culture", mode = "sequentiel") {
+async function startQuiz(category ="culture", mode = "sequentiel") {
     // 1. Réinitialiser l’état du quiz
     //currentQuestionIndex = 0;
     console.log("index question à quiz actuelle"+currentQuestionIndex);
@@ -34,8 +34,9 @@ function startQuiz(category ="culture", mode = "sequentiel") {
 
 
 
-    quizData = loadQuiz(category, mode); // fonction qui retourne un tableau d’objets questions
+    quizData = await loadQuiz(category, mode); // fonction qui retourne un tableau d’objets questions
     console.log(quizData);
+    console.log(quizData[currentQuestionIndex]);
     
     if (quizData.length === 0) {
         quizMessage.innerHTML = "<p>Aucune question disponible pour cette catégorie.</p>";
@@ -76,19 +77,25 @@ function shuffle(array) {  // Mélanger le quiz au besoin
     return [...questions];  // Séquentiel → on garde l’ordre défini
 }*/
 
-function loadQuiz(category, mode) {
+async function loadQuiz(category, mode){
     let questions = [];
 
-    // Fichier JSON importé
-    if (typeof allQuizzes !== "undefined" && allQuizzes[category]) {
-        questions = allQuizzes[category];
-        console.log("quiz exporté");
+    if (category === "api") {
+        questions = await fetchQuestionsFromAPI("informatique", 10);
+        console.log(questions);
         
     } else {
-        // Questions locales
-        if (category === "culture") questions = cultureQuestions;
-        if (category === "informatique") questions = informatiqueQuestions;
-        if (category === "histoire") questions = histoireQuestions;
+        // Fichier JSON importé
+        if (typeof allQuizzes !== "undefined" && allQuizzes[category]) {
+            questions = allQuizzes[category];
+            console.log("quiz exporté");
+            
+        } else {
+            // Questions locales
+            if (category === "culture") questions = cultureQuestions;
+            if (category === "informatique") questions = informatiqueQuestions;
+            if (category === "histoire") questions = histoireQuestions;
+        }
     }
 
     // Gestion du mode de jeu
@@ -105,6 +112,8 @@ function showQuestion() {
     feedbackEl.style.backgroundColor = "none";
 
     const q = quizData[currentQuestionIndex];
+    console.log(q);
+    
         console.log("question index: "+currentQuestionIndex);
 
     //const q = n;

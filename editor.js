@@ -82,3 +82,37 @@ document.getElementById("editorForm").addEventListener("submit", (e) => {
     document.getElementById("editorForm").reset();
     document.getElementById("preview").innerHTML = "";
 });
+
+
+async function fetchQuestionsFromAPI(category = "general", amount = 5) {
+  let url = `https://opentdb.com/api.php?amount=${amount}&type=multiple`;
+
+  if (category === "informatique") url = `https://opentdb.com/api.php?amount=${amount}&category=18&type=multiple`;
+  if (category === "histoire") url = `https://opentdb.com/api.php?amount=${amount}&category=23&type=multiple`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+
+    // Transformer les questions de l’API au format de ton appli
+    return data.results.map(q => {
+      const options = [...q.incorrect_answers, q.correct_answer];
+      // Mélanger les options
+      for (let i = options.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [options[i], options[j]] = [options[j], options[i]];
+      }
+
+      return {
+        type: q.type === "boolean" ? "vf" : "qcm",
+        question: q.question,
+        options: options,
+        answer: [options.indexOf(q.correct_answer)]
+      };
+    });
+
+    } catch (err) {
+        console.error("Erreur API", err);
+        return [];
+    }
+}
