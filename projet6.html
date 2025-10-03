@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Météo</title>
+    <link rel="stylesheet" href="projet6.css">
+</head>
+
+<body>
+    <div class="app">
+        <header>
+            <h1>🌤️ Météo</h1>
+            <button id="toggleTheme">🌙 / ☀️</button>
+
+            <input type="text" id="cityInput" placeholder="Rechercher une ville...">
+            <button id="searchBtn">🔍</button>
+        </header>
+
+        <main>
+            <!-- Météo actuelle -->
+            <section class="current-weather">
+                <div class="weather-icon" id="weatherIcon">⛅</div>
+                <div class="weather-info">
+                    <h2 id="cityName">---</h2>
+                    <p id="temperature">--°C</p>
+                    <p id="description">---</p>
+                </div>
+            </section>
+
+            <!-- Infos supplémentaires -->
+            <section class="extra-info">
+                <p>🌡️ Ressenti: <span id="feelsLike">--°C</span></p>
+                <p>💧 Humidité: <span id="humidity">--%</span></p>
+                <p>💨 Vent: <span id="wind">-- km/h</span></p>
+                <p>🔽 Pression: <span id="pressure">-- hPa</span></p>
+            </section>
+
+            <!-- Prévisions -->
+            <section class="forecast">
+                <h3>Prévisions à 7 jours </h3>
+                <div id="forecastContainer" class="forecast-grid"></div>
+            </section>
+
+            <section class="charts">
+                <h3>🌡️ Températures (24h)</h3>
+                <canvas id="tempChart"></canvas>
+            
+                <h3>☔ Précipitations (24h)</h3>
+                <canvas id="precipChart"></canvas>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!--script src="projet6.js"></script-->
+    <script src="proj6.js"></script>
+</body>
+
+</html>
