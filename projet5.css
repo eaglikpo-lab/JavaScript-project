@@ -152,3 +152,18 @@ button:hover {
 .modal.hidden {
     display: none;
 }
+
+
+#editorForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+}
+
+#preview {
+    margin-top: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+}

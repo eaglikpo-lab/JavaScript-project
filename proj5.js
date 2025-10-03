@@ -60,7 +60,8 @@ function shuffle(array) {  // Mélanger le quiz au besoin
     return array;
 }
 
-function loadQuiz(category, mode) {
+/*function loadQuiz(category, mode) {
+
     let questions = [];
 
     if (category === "culture") questions = cultureQuestions;
@@ -73,7 +74,31 @@ function loadQuiz(category, mode) {
     }
 
     return [...questions];  // Séquentiel → on garde l’ordre défini
+}*/
+
+function loadQuiz(category, mode) {
+    let questions = [];
+
+    // Fichier JSON importé
+    if (typeof allQuizzes !== "undefined" && allQuizzes[category]) {
+        questions = allQuizzes[category];
+        console.log("quiz exporté");
+        
+    } else {
+        // Questions locales
+        if (category === "culture") questions = cultureQuestions;
+        if (category === "informatique") questions = informatiqueQuestions;
+        if (category === "histoire") questions = histoireQuestions;
+    }
+
+    // Gestion du mode de jeu
+    if (mode === "aleatoire") {
+        return shuffle([...questions]); // mélange si mode aléatoire
+    }
+
+    return [...questions]; // séquentiel → ordre défini
 }
+
 
 function showQuestion() {
     feedbackEl.textContent = "";
@@ -331,3 +356,77 @@ function showStats() {
 
 }
 
+
+// Exporter toutes les questions en JSON
+function exportQuiz() {
+  const allQuestions = {
+    informatique: informatiqueQuestions,
+    histoire: histoireQuestions,
+    culture: cultureQuestions
+  };
+
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allQuestions, null, 2));
+  const dlAnchor = document.createElement("a");
+  dlAnchor.setAttribute("href", dataStr);
+  dlAnchor.setAttribute("download", "quiz_export.json");
+  dlAnchor.click();
+}
+
+
+// Importer un fichier JSON
+/*function importQuiz(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.readAsText(file);
+
+    reader.onload = function(e) {
+        try {
+            const importedData = JSON.parse(e.target.result);
+
+            // Fusionner avec nos questions existantes
+            if (importedData.informatique) {
+                informatiqueQuestions = [...informatiqueQuestions, ...importedData.informatique];
+            }
+
+            if (importedData.histoire) {
+                histoireQuestions = [...histoireQuestions, ...importedData.histoire];
+            }
+
+            if (importedData.culture) {
+                histoireQuestions = [...histoireQuestions, ...importedData.histoire];
+            }
+
+        alert("Import réussi ✅");
+        } catch (err) {
+        alert("Erreur lors de l'import JSON ❌");
+        }
+    };
+}*/
+
+
+function importQuiz(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const importedData = JSON.parse(e.target.result);
+
+            // Stocke dans une variable globale
+            allQuizzes = importedData;  
+            console.log("Quiz importé :", allQuizzes);
+
+            alert("Import réussi !");
+        } catch (err) {
+            alert("Erreur JSON : " + err.message);
+        }
+    };
+    reader.readAsText(file);
+}
+
+
+document.getElementById("btnExport").addEventListener("click", exportQuiz);
+document.getElementById("inputImport").addEventListener("change", importQuiz);

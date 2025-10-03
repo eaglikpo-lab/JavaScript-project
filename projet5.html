@@ -80,10 +80,18 @@
     <!-- Modal Éditeur -->
     <div id="editorModal" class="modal hidden">
         <div class="modal-content">
-            <h2>Ajouter une Question</h2>
+            <h2>Éditeur de Quiz / Ajouter une Question</h2>
             <form id="editorForm">
+
+                <label>Catégorie :</label>
+                <select id="editorCategory">
+                    <option value="culture">Culture</option>
+                    <option value="informatique">Informatique</option>
+                    <option value="histoire">Histoire</option>
+                </select>
+
                 <label>Type:
-                    <select id="questionType">
+                    <select id="editorType">
                         <option value="qcm">QCM</option>
                         <option value="vf">Vrai/Faux</option>
                         <option value="text">Texte Libre</option>
@@ -91,10 +99,30 @@
                         <option value="image">Image</option>
                     </select>
                 </label>
+
+
                 <label>Question:
-                    <input type="text" id="questionText" required>
+                    <input type="text" id="editorQuestion" required>
                 </label>
+
+                <div id="editorOptions">
+                    <!-- Pour QCM on ajoute dynamiquement des champs d’options -->
+                </div>
+                <label>Bonne réponse (index ou vrai/faux) :</label>
+                <input type="text" id="editorAnswer" required>
+
                 <button type="submit">Ajouter</button>
+
+                <h3>Aperçu :</h3>
+                <div id="preview"></div>
+
+                <button id="backBtn">Retour</button>
+
+                <div class="import-export">
+                    <button id="btnExport">Exporter Quiz (JSON)</button>
+                    <input type="file" id="inputImport" accept="application/json">
+                </div>
+
                 <button type="button" id="closeEditor">Fermer</button>
             </form>
         </div>
@@ -103,6 +131,7 @@
 
     <!--script src="projet5.js"></script-->
     <script src="proj5.js"></script>
+    <script src="editor.js"></script>
     <script src="data/culture.js"></script>
     <script src="data/informatique.js"></script>
     <script src="data/histoire.js"></script>
