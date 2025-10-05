@@ -68,47 +68,90 @@ function initWeather() {
 
 
 async function getWeatherByCoords(lat, lon) {
-  const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=fr&appid=${apiKey}`;
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
-     console.log("response", data);
-            
-    console.log("je te vois");
-    console.log("Prévisions via position :", data);
-    Weather(data); // fonction d'affichage
-    displayWeather(data.city.name);
-  } catch (err) {
-    console.error("Erreur API (coords)", err);
+  const cacheKey = `weather_coords_${lat.toFixed(3)}_${lon.toFixed(3)}`;
+
+  const online = navigator.onLine;
+
+  if (online) {
+    try {
+      //const cacheKey = `weather_coords_${lat.toFixed(3)}_${lon.toFixed(3)}`;
+      const cachedData = getSmartCache(cacheKey);
+
+      if (cachedData) {
+        console.log("🟢 Données récupérées du cache (coordonnées)");
+        return Weather(cachedData);
+      }
+
+      console.log("🌐 Appel API par coordonnées :", lat, lon);
+  
+      const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=fr&appid=${apiKey}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      console.log("response", data);
+              
+      console.log("Prévisions via position :", data);
+      saveToCache(cacheKey, data);
+
+      await Weather(data); // fonction d'affichage
+      displayWeather(data.city.name);
+    } catch (err) {
+      console.error("Erreur API (coords)", err);
+    }
+  } else {
+    console.warn("📴 Pas de connexion, affichage du cache...");
+    const cached = getFromCache(cacheKey);
+    if (cached) await Weather(cached);
+    else alert("Aucune donnée météo disponible hors-ligne 😞");
   }
 }
 
+
 async function getWeather(city) {
-  try {
-    // Récupération des coordonnées via la ville ---
-    const coordUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=fr`;
-    const coordRes = await fetch(coordUrl);
-    const coordData = await coordRes.json();
+  const cacheKey = `weather_city_${city.toLowerCase()}`;
+  const online = navigator.onLine;
 
-    if (coordData.cod !== 200) {
-      alert("Ville introuvable !");
-      return;
+  if (online) {
+    try {
+      //const cacheKey = `weather_city_${city.toLowerCase()}`;
+      const cachedData = getSmartCache(cacheKey);
+
+      if (cachedData) {
+        console.log("🟢 Données récupérées du cache :", city);
+        return Weather(cachedData);
+      }
+
+      // Récupération des coordonnées via la ville ---
+      console.log("🌐 Appel API pour :", city);
+      const coordUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=fr`;
+      const coordRes = await fetch(coordUrl);
+      const coordData = await coordRes.json();
+
+      if (coordData.cod !== 200) {
+        alert("Ville introuvable !");
+        return;
+      }
+
+      const { lat, lon } = coordData.coord;
+
+      // Récupération des prévisions avec forecast ---
+      const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=fr&appid=${apiKey}`;
+      const forecastRes = await fetch(forecastUrl);
+      const forecastData = await forecastRes.json();
+
+      console.log("Prévisions via ville :", forecastData);
+
+      // Affichage des informations ---
+      saveToCache(cacheKey, forecastData);
+      await Weather(forecastData);
+
+    } catch (err) {
+      console.error(err);
     }
-
-    const { lat, lon } = coordData.coord;
-
-    // Récupération des prévisions avec forecast ---
-    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=fr&appid=${apiKey}`;
-    const forecastRes = await fetch(forecastUrl);
-    const forecastData = await forecastRes.json();
-
-    console.log("Prévisions via ville :", forecastData);
-
-    // Affichage des informations ---
-    await Weather(forecastData);
-
-  } catch (err) {
-    console.error(err);
+  } else {
+    console.warn("📴 Pas de connexion, affichage du cache...");
+    const cached = getFromCache(cacheKey);
+    if (cached) await Weather(cached);
+    else alert("Aucune donnée météo disponible hors-ligne 😞");
   }
 }
 
