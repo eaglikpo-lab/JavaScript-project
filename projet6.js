@@ -20,8 +20,9 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
         const apiKey = "ea5d0fdaeac747502f8d70675c7c011b"; // à remplacer par ta clé OpenWeather
         const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=fr`;
-        const res = await fetch(url);
-        const data = await res.json();
+            const res = await fetch(url);
+            
+            const data = await res.json();
 
         if (data.cod === 200) {
             document.getElementById("cityName").textContent = data.name;

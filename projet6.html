@@ -10,12 +10,31 @@
 
 <body>
     <div class="app">
-        <header>
-            <h1>🌤️ Météo</h1>
-            <button id="toggleTheme">🌙 / ☀️</button>
 
-            <input type="text" id="cityInput" placeholder="Rechercher une ville...">
-            <button id="searchBtn">🔍</button>
+        <header>
+            <h1>
+                <button id="toggleTheme">🌙/☀️</button>
+                Météo
+            </h1>
+
+            <div id="searchContainer">
+                <input type="text" id="cityInput" autocomplete="off" placeholder="Rechercher une ville...">
+                <ul id="autocompleteList" class="autocomplete-list"></ul>
+                <button id="searchBtn">🔍</button>
+            </div>
+
+            <section class="history-favorites">
+                <div class="favorites">
+                    <h3>🌟 Villes favorites</h3>
+                    <ul id="favoritesList"></ul>
+                </div>
+            
+                <div class="history">
+                    <h3>🕓 Recherches récentes</h3>
+                    <ul id="historyList"></ul>
+                </div>
+            </section>
+           
         </header>
 
         <main>
@@ -24,6 +43,8 @@
                 <div class="weather-icon" id="weatherIcon">⛅</div>
                 <div class="weather-info">
                     <h2 id="cityName">---</h2>
+                    <button id="favBtn">⭐ Ajouter aux favoris</button>
+
                     <p id="temperature">--°C</p>
                     <p id="description">---</p>
                 </div>
@@ -35,7 +56,18 @@
                 <p>💧 Humidité: <span id="humidity">--%</span></p>
                 <p>💨 Vent: <span id="wind">-- km/h</span></p>
                 <p>🔽 Pression: <span id="pressure">-- hPa</span></p>
+                <p id="sunrise"></p>
+                <p id="sunset"></p>
+                <p id="air"></p>
+                <p id="uv"></p>
+
             </section>
+
+            <section class="alerts">
+                <h3>Alertes météo</h3>
+                <div id="alerts"></div>
+            </section>
+
 
             <!-- Prévisions -->
             <section class="forecast">
