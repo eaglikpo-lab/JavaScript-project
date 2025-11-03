@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Contacts</title>
+    <link rel="stylesheet" href="/projet4.css">
+</head>
+
+<body>
+    <h1>Gestion des Contacts</h1>
+
+    <!-- Formulaire d'ajout -->
+    <form id="contact-form">
+        <div class="form-group">
+            <label>Nom</label>
+            <input type="text" id="nom" required>
+            <small></small>
+        </div>
+        <div class="form-group">
+            <label>Prénom</label>
+            <input type="text" id="prenom" required>
+            <small></small>
+        </div>
+        <div class="form-group">
+            <label>Téléphone</label>
+            <div id="phone-container">
+                <input type="tel" name="telephone[]" required>
+            </div>
+            <button type="button" id="add-phone">+ Ajouter numéro</button>
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <div id="email-container">
+                <input type="email" name="email[]" required>
+            </div>
+            <button type="button" id="add-email">+ Ajouter email</button>
+        </div>
+        <div class="form-group">
+            <label>Adresse</label>
+            <input type="text" id="adresse">
+        </div>
+        <div class="form-group">
+            <label>Notes</label>
+            <textarea id="notes"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Groupes (sélection multiple ou ajouter)</label>
+            <select id="group-select" multiple>
+                <option value="famille">famille</option>
+                <option value="travail">travail</option>
+                <option value="amis">amis</option>
+            </select>
+            <div class="inline">
+                <input type="text" id="new-group" placeholder="Nouveau groupe">
+                <button type="button" id="add-group">Ajouter groupe</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="tags">Étiquettes </label>
+            <div id="tag-container">
+                <input type="text" id="tag-input" placeholder="Ajouter une étiquette et appuyer sur Entrée">
+            </div>
+        </div>
+        
+
+        <div class="form-group">
+            <label class="switch">
+                <label for="checkbox">Favoris</label>
+                <input type="checkbox" id="favoris">
+                <span class="slider"></span>
+                <!--button id="show-favorites">Favoris </button-->
+            </label>
+        </div>
+
+        <button type="submit">Ajouter Contact</button>
+    </form>
+
+    <!-- Liste des contacts -->
+    <h2>Mes Contacts</h2>
+    <ul id="contact-list"></ul>
+
+    
+    <div class="search-bar">
+        <input type="text" id="search" placeholder="Rechercher un contact (nom, téléphone, email)...">
+    </div>
+    
+    <div id="contact-container" class="list-view"></div>
+
+    <div class="view-switcher">
+        <button id="list-view">Vue Liste</button>
+        <button id="grid-view">Vue Grille</button>
+
+        <label for="contact-filter">Filtrer par :</label>
+        <select id="contact-filter">
+            <option value="all">Tous</option>
+            <option value="first-letter">première lettre</option>
+            <option value="group">groupe</option>
+            <option value="favoris">favoris</option>
+        </select>
+
+        <label for="contact-sort">Trier par :</label>
+        <select id="contact-sort">
+            <option value="nom">Nom (A → Z)</option>
+            <option value="date-ajout">Date d’ajout</option>
+            <option value="date-modif">Dernière modification</option>
+        </select>
+
+    </div>
+    
+    <!-- Conteneur des contacts -->
+    <div id="contact-container" class="list-view"></div>
+
+    <!-- Modal d’édition -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-modal">&times;</span>
+            <h3>Modifier Contact</h3>
+            <form id="edit-form"></form>
+        </div>
+    </div>
+
+    
+        <button onclick="exportJSON()">📂 Exporter en JSON</button>
+        <!--label>Importer JSON</label>
+        <input type="file" id="import-json" accept=".json"-->
+
+        <button onclick="exportCSV()">📂 Exporter en CSV</button>
+        <!--label>Importer CSV</label>
+        <input type="file" id="import-csv" accept=".csv"-->
+        <input type="file" id="import-file" accept=".json,.csv">
+        <button id="import-btn">Importer</button>
+
+
+    <!--script src="proj4.js"></script-->
+    <!-- <script src="projet4.js"></script> -->
+    <script src="./dist/main.js"></script>
+
+</body>
+
+</html>
