@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+//Object.defineProperty(exports, "__esModule", { value: true });
 class Task {
     constructor(id, title, description, priority, dueDate = null, completed = false) {
         this.id = id;
