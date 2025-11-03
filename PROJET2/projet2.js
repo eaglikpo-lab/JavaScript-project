@@ -139,9 +139,9 @@ class TodoList {
 // Classe TodoUI (pour gerer le dom)
 // =======================
 class TodoUI {
-    constructor(todoList, containerId) {
+    constructor(todoList, container) {
         this.todoList = todoList;
-        this.container = list;
+        this.container = container;
     }
 
     renderTask(task) {
