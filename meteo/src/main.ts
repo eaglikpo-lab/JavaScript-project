@@ -225,6 +225,7 @@ function displayForecast(weather: ForecastData): void {
       const icon = days[key].icons[0];
       return { date: key, min, max, icon };
     }
+    return;
   });
 
   forecastDays.forEach(day => {
@@ -254,7 +255,7 @@ async function displayWeather(city: string) {
 
     displayForecast(weather); // prévision sur 5 jours
 
-    // --- Prévisions 24h ---
+   // --- Prévisions 24h ---
     const forecast = weather.list.slice(0, 8); // 8 * 3h = 24h  40=5jours
     const hours = forecast.map((item: any) => {
       const date = new Date(item.dt * 1000);
@@ -268,36 +269,36 @@ async function displayWeather(city: string) {
       precipChart.destroy();
     }
 
-    // === Graphique Température ===
-    // tempChart = new Chart(document.getElementById("tempChart"), {
-    //   type: "line",
-    //   data: {
-    //     labels: hours,
-    //     datasets: [{
-    //       label: "Température (°C)",
-    //       data: temperatures,
-    //       borderColor: "red",
-    //       backgroundColor: "rgba(255,0,0,0.2)",
-    //       fill: true,
-    //       tension: 0.3
-    //     }]
-    //   },
-    //   options: { responsive: true, plugins: { legend: { display: true } } }
-    // });
+   /*// === Graphique Température ===
+    tempChart = new Chart(document.getElementById("tempChart"), {
+      type: "line",
+      data: {
+        labels: hours,
+        datasets: [{
+          label: "Température (°C)",
+          data: temperatures,
+          borderColor: "red",
+          backgroundColor: "rgba(255,0,0,0.2)",
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { display: true } } }
+    });
 
     // === Graphique Précipitations ===
-    // precipChart = new Chart(document.getElementById("precipChart"), {
-    //   type: "bar",
-    //   data: {
-    //     labels: hours,
-    //     datasets: [{
-    //       label: "Précipitations (%)",
-    //       data: precipitations,
-    //       backgroundColor: "rgba(0,123,255,0.6)"
-    //     }]
-    //   },
-    //   options: { responsive: true, plugins: { legend: { display: true } }, scales: { y: { beginAtZero: true, max: 100 } } }
-    // });
+    precipChart = new Chart(document.getElementById("precipChart"), {
+      type: "bar",
+      data: {
+        labels: hours,
+        datasets: [{
+          label: "Précipitations (%)",
+          data: precipitations,
+          backgroundColor: "rgba(0,123,255,0.6)"
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { display: true } }, scales: { y: { beginAtZero: true, max: 100 } } }
+    });*/
 
   } catch (error) {
     console.error("Erreur dans displayWeather :", error);
@@ -306,7 +307,8 @@ async function displayWeather(city: string) {
 
 async function displayAlerts(lat: number, lon: number) {
   const alertsContainer = document.getElementById("alerts") as HTMLElement;
-
+  console.log(lat, lon);
+  
   try {
     // Simulation d'une fausse alerte pour tester l’UI
     const fakeAlert = {
@@ -433,7 +435,7 @@ window.addEventListener("load", initWeather);
 
 const cityInput = document.getElementById("cityInput") as HTMLInputElement;
 const autocompleteList = document.getElementById("autocompleteList") as HTMLElement;
-const searchBtn = document.getElementById("searchBtn") as HTMLButtonElement;
+// const searchBtn = document.getElementById("searchBtn") as HTMLButtonElement;
 
 document.addEventListener("DOMContentLoaded", () => {
   const searchBtn = document.getElementById("searchBtn") as HTMLButtonElement;
