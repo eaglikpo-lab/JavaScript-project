@@ -83,12 +83,12 @@ async function getWeatherByCoords(lat, lon) {
       }
 
       console.log("🌐 Appel API par coordonnées :", lat, lon);
-  
+
       const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=fr&appid=${apiKey}`;
       const res = await fetch(url);
       const data = await res.json();
       console.log("response", data);
-              
+
       console.log("Prévisions via position :", data);
       saveToCache(cacheKey, data);
 
@@ -221,13 +221,13 @@ function displayForecast(weather) {   // previsions 7 jours (ici 5)
 async function displayWeather(city) {
   try {
 
-    const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&lang=fr&appid=${apiKey}`; 
+    const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&lang=fr&appid=${apiKey}`;
     const res = await fetch(url);
     const weather = await res.json();
     console.log(weather); // retourne tout l'objet JSON complet
 
     displayForecast(weather); // prévision sur 5 jours
-    
+
     // --- Prévisions 24h ---
     const forecast = weather.list.slice(0, 8); // 8 * 3h = 24h  40=5jours
     const hours = forecast.map(item => {
@@ -243,28 +243,28 @@ async function displayWeather(city) {
     }
 
     // === Graphique Température ===
-        tempChart = new Chart(document.getElementById("tempChart"), {
-        type: "line",
-        data: {
-          labels: hours,
-          datasets: [{
+    tempChart = new Chart(document.getElementById("tempChart"), {
+      type: "line",
+      data: {
+        labels: hours,
+        datasets: [{
           label: "Température (°C)",
           data: temperatures,
           borderColor: "red",
           backgroundColor: "rgba(255,0,0,0.2)",
           fill: true,
           tension: 0.3
-          }]
-        },
-        options: { responsive: true, plugins: { legend: { display: true } } }
-        });
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { display: true } } }
+    });
 
-        // === Graphique Précipitations ===
-        precipChart = new Chart(document.getElementById("precipChart"), {
-        type: "bar",
-        data: {
-          labels: hours,
-          datasets: [{
+    // === Graphique Précipitations ===
+    precipChart = new Chart(document.getElementById("precipChart"), {
+      type: "bar",
+      data: {
+        labels: hours,
+        datasets: [{
           label: "Précipitations (%)",
           data: precipitations,
           backgroundColor: "rgba(0,123,255,0.6)"
@@ -280,14 +280,14 @@ async function displayWeather(city) {
 
 async function displayAlerts(lat, lon) {
   const alertsContainer = document.getElementById("alerts");
-  
+
   try {
     // Simulation d'une fausse alerte pour tester l’UI
     const fakeAlert = {
       sender_name: "⚡ Service météo",
       event: "Orages violents (simulation)",
       start: new Date().toLocaleString("fr-FR"),
-      end: new Date(Date.now() + 3*60*60*1000).toLocaleString("fr-FR"),
+      end: new Date(Date.now() + 3 * 60 * 60 * 1000).toLocaleString("fr-FR"),
       description: "Des pluies abondantes et un risque de grêle sont attendus."
     };
 
@@ -426,7 +426,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    
+
     const coordPattern = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;   // regex de coordonnées GPS
 
     if (coordPattern.test(input)) {
@@ -439,7 +439,7 @@ document.addEventListener("DOMContentLoaded", () => {
       displayWeather(input);
 
     }
-      
+
   });
 });
 
