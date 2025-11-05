@@ -1,3 +1,9 @@
+import { saveToCache, getFromCache, getSmartCache } from "./FA.js";
+// import { Chart } from "chart.js";
+// import { Chart, registerables } from "chart.js";
+// Chart.register(...registerables);
+
+
 const apiKey: string = "ea5d0fdaeac747502f8d70675c7c011b"; // à remplacer par ta clé OpenWeather
 let tempChart: any;
 let precipChart: any;
@@ -34,7 +40,7 @@ interface CityInfo {
   coord: { lat: number; lon: number };
 }
 
-interface ForecastData {
+export interface ForecastData {
   cod: string;
   city: CityInfo;
   list: WeatherListItem[];
@@ -47,37 +53,39 @@ async function Weather(data: ForecastData): Promise<ForecastData | void> {
     (document.getElementById("cityName") as HTMLElement).textContent = data.city.name;
 
     // --- Données actuelles ---
-      const current = data.list[0];
-      if (current) {
-          (document.getElementById("temperature") as HTMLElement).textContent = `${Math.round(current.main.temp)}°C`;
-          (document.getElementById("description") as HTMLElement).textContent = current.weather[0].description;
-          (document.getElementById("feelsLike") as HTMLElement).textContent = `${Math.round(current.main.feels_like)}°C`;
-          (document.getElementById("humidity") as HTMLElement).textContent = `${current.main.humidity}%`;
-          (document.getElementById("wind") as HTMLElement).textContent = `${Math.round(current.wind.speed * 3.6)} km/h`;
-          (document.getElementById("pressure") as HTMLElement).textContent = `${current.main.pressure} hPa`;
-      }
+    const current = data.list[0];
+    if (current) {
+      (document.getElementById("temperature") as HTMLElement).textContent = `${Math.round(current.main.temp)}°C`;
+      if (current.weather[0]) (document.getElementById("description") as HTMLElement).textContent = current.weather[0].description;
+      (document.getElementById("feelsLike") as HTMLElement).textContent = `${Math.round(current.main.feels_like)}°C`;
+      (document.getElementById("humidity") as HTMLElement).textContent = `${current.main.humidity}%`;
+      (document.getElementById("wind") as HTMLElement).textContent = `${Math.round(current.wind.speed * 3.6)} km/h`;
+      (document.getElementById("pressure") as HTMLElement).textContent = `${current.main.pressure} hPa`;
 
-    // --- Lever & coucher du soleil ---
-    const sunrise = new Date(data.city.sunrise * 1000).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-    const sunset = new Date(data.city.sunset * 1000).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-    (document.getElementById("sunrise") as HTMLElement).textContent = `🌅 Lever du soleil : ${sunrise}`;
-    (document.getElementById("sunset") as HTMLElement).textContent = `🌇 Coucher du soleil : ${sunset}`;
+      // --- Lever & coucher du soleil ---
+      const sunrise = new Date(data.city.sunrise * 1000).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+      const sunset = new Date(data.city.sunset * 1000).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+      (document.getElementById("sunrise") as HTMLElement).textContent = `🌅 Lever du soleil : ${sunrise}`;
+      (document.getElementById("sunset") as HTMLElement).textContent = `🌇 Coucher du soleil : ${sunset}`;
 
-    // --- Qualité de l’air ---
-    const { lat, lon } = data.city.coord;
-    const airUrl = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`;
-    const airRes = await fetch(airUrl);
-    const airData = await airRes.json();
-    const aqi = airData.list[0].main.aqi;
-    const aqiLevels = ["", "Bon", "Acceptable", "Modéré", "Mauvais", "Très mauvais"];
-    (document.getElementById("air") as HTMLElement).textContent = `💨 Qualité de l'air : ${aqiLevels[aqi]}`;
+      // --- Qualité de l’air ---
+      const { lat, lon } = data.city.coord;
+      console.log(lat);
 
-    // --- Icône météo ---
-    (document.getElementById("weatherIcon") as HTMLElement).textContent = getWeatherIcon(current.weather[/.main);
+      const airUrl = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`;
+      const airRes = await fetch(airUrl);
+      const airData = await airRes.json();
+      const aqi = airData.list[0].main.aqi;
+      const aqiLevels = ["", "Bon", "Acceptable", "Modéré", "Mauvais", "Très mauvais"];
+      (document.getElementById("air") as HTMLElement).textContent = `💨 Qualité de l'air : ${aqiLevels[aqi]}`;
 
-    // --- Alertes météo ---
-    displayAlerts(lat, lon);
-    addHistory(data.city.name);
+      // --- Icône météo ---
+      if (current.weather[0]) (document.getElementById("weatherIcon") as HTMLElement).textContent = getWeatherIcon(current.weather[0].main);
+      
+      // --- Alertes météo ---
+      displayAlerts(lat, lon);
+      addHistory(data.city.name);
+    }
 
     return data;
   } else {
@@ -116,7 +124,9 @@ async function getWeatherByCoords(lat: number, lon: number): Promise<void> {
       const cachedData = getSmartCache(cacheKey);
       if (cachedData) {
         console.log("🟢 Données récupérées du cache (coordonnées)");
-        return Weather(cachedData);
+        // return Weather(cachedData);
+        await Weather(cachedData);
+        return;
       }
 
       console.log("🌐 Appel API par coordonnées :", lat, lon);
@@ -148,7 +158,8 @@ async function getWeather(city: string): Promise<void> {
       const cachedData = getSmartCache(cacheKey);
       if (cachedData) {
         console.log("🟢 Données récupérées du cache :", city);
-        return Weather(cachedData);
+        // return Weather(cachedData);
+        await Weather(cachedData);
       }
 
       console.log("🌐 Appel API pour :", city);
@@ -199,22 +210,25 @@ function displayForecast(weather: ForecastData): void {
   const days: Record<string, { temps: number[]; icons: string[] }> = {};
   weather.list.forEach(item => {
     const date = new Date(item.dt * 1000);
-    const dayKey = date.toISOString().split("T")[0];
+    const dayKey: string = date.toISOString().split("T")[0] || "";
 
     if (!days[dayKey]) days[dayKey] = { temps: [], icons: [] };
     days[dayKey].temps.push(item.main.temp);
-    days[dayKey].icons.push(item.weather[0].icon);
+    if (item.weather[0]) days[dayKey].icons.push(item.weather[0].icon);
   });
 
   const forecastDays = Object.keys(days).slice(0, 5).map(key => {
-    const temps = days[key].temps;
-    const min = Math.min(...temps);
-    const max = Math.max(...temps);
-    const icon = days[key].icons[0];
-    return { date: key, min, max, icon };
+    if (days[key]) {
+      const temps = days[key].temps;
+      const min = Math.min(...temps);
+      const max = Math.max(...temps);
+      const icon = days[key].icons[0];
+      return { date: key, min, max, icon };
+    }
   });
 
   forecastDays.forEach(day => {
+    if (!day) return;
     const date = new Date(day.date);
     const label = date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "short" });
 
@@ -230,8 +244,68 @@ function displayForecast(weather: ForecastData): void {
   });
 }
 
-async function displayAlerts(lat, lon) {
-  const alertsContainer = document.getElementById("alerts");
+async function displayWeather(city: string) {
+  try {
+
+    const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&lang=fr&appid=${apiKey}`;
+    const res = await fetch(url);
+    const weather = await res.json();
+    console.log(weather); // retourne tout l'objet JSON complet
+
+    displayForecast(weather); // prévision sur 5 jours
+
+    // --- Prévisions 24h ---
+    const forecast = weather.list.slice(0, 8); // 8 * 3h = 24h  40=5jours
+    const hours = forecast.map((item: any) => {
+      const date = new Date(item.dt * 1000);
+      return `${date.getHours()}h`;
+    });
+    const temperatures = forecast.map((item: any) => item.main.temp);
+    const precipitations = forecast.map((item: any) => item.pop * 100); // % probabilité pluie
+
+    if (tempChart || precipChart) {
+      tempChart.destroy();
+      precipChart.destroy();
+    }
+
+    // === Graphique Température ===
+    // tempChart = new Chart(document.getElementById("tempChart"), {
+    //   type: "line",
+    //   data: {
+    //     labels: hours,
+    //     datasets: [{
+    //       label: "Température (°C)",
+    //       data: temperatures,
+    //       borderColor: "red",
+    //       backgroundColor: "rgba(255,0,0,0.2)",
+    //       fill: true,
+    //       tension: 0.3
+    //     }]
+    //   },
+    //   options: { responsive: true, plugins: { legend: { display: true } } }
+    // });
+
+    // === Graphique Précipitations ===
+    // precipChart = new Chart(document.getElementById("precipChart"), {
+    //   type: "bar",
+    //   data: {
+    //     labels: hours,
+    //     datasets: [{
+    //       label: "Précipitations (%)",
+    //       data: precipitations,
+    //       backgroundColor: "rgba(0,123,255,0.6)"
+    //     }]
+    //   },
+    //   options: { responsive: true, plugins: { legend: { display: true } }, scales: { y: { beginAtZero: true, max: 100 } } }
+    // });
+
+  } catch (error) {
+    console.error("Erreur dans displayWeather :", error);
+  }
+}
+
+async function displayAlerts(lat: number, lon: number) {
+  const alertsContainer = document.getElementById("alerts") as HTMLElement;
 
   try {
     // Simulation d'une fausse alerte pour tester l’UI
@@ -258,32 +332,169 @@ async function displayAlerts(lat, lon) {
   }
 }
 
+// Détection automatique selon l'heure
+function setThemeByTime() {
+  const hour = new Date().getHours();
+  if (hour >= 19 || hour < 7) {
+    document.body.classList.add("dark");
+    document.body.classList.remove("light");
+  } else {
+    document.body.classList.add("light");
+    document.body.classList.remove("dark");
+  }
+}
+
+
+// Bascule manuelle avec le bouton
+const toggleTheme = document.getElementById("toggleTheme") as HTMLElement;
+toggleTheme.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+  document.body.classList.toggle("light");
+  toggleTheme.classList.toggle("light");
+});
+
+// Initialisation au chargement
+setThemeByTime();
+
+async function fetchCitySuggestions(query: string) {
+  if (!query) {
+    autocompleteList.innerHTML = "";
+    return;
+  }
+
+  try {
+    // OpenWeather Geocoding API
+    const url = `https://api.openweathermap.org/geo/1.0/direct?q=${query}&limit=5&appid=${apiKey}`;
+    const res = await fetch(url);
+    const cities = await res.json();
+
+    // Affichage des suggestions
+    autocompleteList.innerHTML = "";
+    cities.forEach((city: any) => {
+      const li = document.createElement("li");
+      li.textContent = `${city.name}, ${city.country}`;
+      li.addEventListener("click", () => {
+        cityInput.value = city.name;
+        autocompleteList.innerHTML = "";
+        getWeather(city.name); // lance la recherche météo
+        displayWeather(city.name);
+      });
+      autocompleteList.appendChild(li);
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function saveFavorites() {
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+}
+
+function saveHistory() {
+  localStorage.setItem("history", JSON.stringify(history));
+}
+
+
+// Ajouter une ville en favoris
+function addFavorite(city: string) {
+  if (!favorites.includes(city)) {
+    favorites.push(city);
+    saveFavorites();
+    renderFavorites();
+  }
+}
 
 // Ajouter à l’historique
-function addHistory(city) {
+function addHistory(city: string) {
   // éviter doublons
-  history = history.filter(c => c !== city);
+  history = history.filter((c: any) => c !== city);
   history.unshift(city); // ajoute au début
   if (history.length > 5) history.pop(); // garder 5 max
   saveHistory();
   renderHistory();
 }
 
-function getSmartCache(key, maxAge = 10 * 60 * 1000) { // 10 minutes par défaut
-  const cached = localStorage.getItem(key);
-  if (!cached) return null;
 
-  const parsed = JSON.parse(cached);
-  const isExpired = (Date.now() - parsed.timestamp) > maxAge;
-
-  return isExpired ? null : parsed.data;
+// Afficher les listes
+function renderFavorites() {
+  favoritesList.innerHTML = favorites
+    .map((c: any) => `<li>${c}</li>`)
+    .join("");
 }
 
-function getFromCache(key) {
-  const cached = localStorage.getItem(key);
-  if (!cached) return null;
-
-  const parsed = JSON.parse(cached);
-  console.log("💾 Dernière donnée enregistrée :", new Date(parsed.timestamp).toLocaleString());
-  return parsed.data; // Pas de vérification d'expiration ici
+function renderHistory() {
+  historyList.innerHTML = history
+    .map((c: any) => `<li>${c}</li>`)
+    .join("");
 }
+
+// --- Lancement au chargement
+window.addEventListener("load", initWeather);
+
+const cityInput = document.getElementById("cityInput") as HTMLInputElement;
+const autocompleteList = document.getElementById("autocompleteList") as HTMLElement;
+const searchBtn = document.getElementById("searchBtn") as HTMLButtonElement;
+
+document.addEventListener("DOMContentLoaded", () => {
+  const searchBtn = document.getElementById("searchBtn") as HTMLButtonElement;
+  const cityInput = document.getElementById("cityInput") as HTMLInputElement;
+
+  cityInput.addEventListener("input", (e) => {
+    const target = e.target as HTMLInputElement;
+    fetchCitySuggestions(target.value);
+  });
+  searchBtn.addEventListener("click", () => {
+    const input = cityInput.value.trim();
+
+    if (!input) {
+      alert("Veuillez entrer un nom de ville ou des coordonnées !");
+      return;
+    }
+
+
+    const coordPattern = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;   // regex de coordonnées GPS
+
+    if (coordPattern.test(input)) {
+      const [lat, lon] = input.split(",").map(coord => parseFloat(coord.trim()));
+      console.log("📍 Coordonnées détectées :", lat, lon);
+      getWeatherByCoords(lat as number, lon as number);
+    } else {
+      console.log("🏙️ Ville détectée :", input);
+      getWeather(input);
+      displayWeather(input);
+
+    }
+
+  });
+});
+
+const favoritesList = document.getElementById("favoritesList") as HTMLElement;
+const historyList = document.getElementById("historyList") as HTMLElement;
+
+// Charger les données au démarrage
+let favorites = JSON.parse(localStorage.getItem("favorites") ?? "[]");
+let history = JSON.parse(localStorage.getItem("history") ?? "[]");
+
+
+const favBtn = document.getElementById("favBtn") as HTMLButtonElement;
+favBtn.addEventListener("click", () => {
+  const city = document.getElementById("cityName")?.textContent;
+  if (!city) return;
+  addFavorite(city);
+});
+
+// Click sur un favori ou une ville récente → recharge météo
+[favoritesList, historyList].forEach(list => {
+  list.addEventListener("click", e => {
+    const target = e.target as HTMLElement;
+    if (target.tagName === "LI") {
+      const city = target.textContent;
+      getWeather(city);
+      displayWeather(city);
+    }
+  });
+});
+
+// Affichage initial
+renderFavorites();
+renderHistory();

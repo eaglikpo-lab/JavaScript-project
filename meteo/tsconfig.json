@@ -8,8 +8,10 @@
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "nodenext",
-    "target": "esnext",
+    "target": "es6",
     "types": [],
+    "moduleResolution": "node", // ou "nodenext" selon votre environnement
+
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],
@@ -40,6 +42,11 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
+  
+    // Options importantes pour les chemins d'import
+    "allowImportingTsExtensions": false, // Interdit les imports .ts
+    "resolveJsonModule": true,
+    "esModuleInterop": true
   },
   "include": ["src"]
 }
