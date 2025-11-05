@@ -1,15 +1,7 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-import { informatiqueQuestions } from './data/informatique';
-import { cultureQuestions } from './data/culture';
-import { histoireQuestions } from './data/histoire';
+import { informatiqueQuestions } from './data/informatique.js';
+import { cultureQuestions } from './data/culture.js';
+import { histoireQuestions } from './data/histoire.js';
+console.log(informatiqueQuestions);
 let allQuizzes = {
     culture: cultureQuestions,
     informatique: informatiqueQuestions,
@@ -28,6 +20,7 @@ const scoreEl = document.getElementById("score");
 const livesEl = document.getElementById("lives");
 const startBtn = document.getElementById("startBtn");
 startBtn.addEventListener("click", () => {
+    console.log("click");
     const categoryInp = document.getElementById("category");
     const category = categoryInp.value;
     const modeInp = document.getElementById("mode");
@@ -36,60 +29,55 @@ startBtn.addEventListener("click", () => {
     console.log(mode, typeof mode);
     startQuiz(category, mode);
 });
-function startQuiz() {
-    return __awaiter(this, arguments, void 0, function* (category = "culture", mode = "sequentiel") {
-        var _a, _b;
-        // 1. Réinitialiser l’état du quiz
-        //currentQuestionIndex = 0;
-        console.log("index question à quiz actuelle" + currentQuestionIndex);
-        score = 0;
-        lives = 3; // ou configurable*
-        currentCategory = category; // ← mémoriser
-        if (scoreEl !== null)
-            scoreEl.textContent = `${score}`;
-        if (livesEl !== null)
-            livesEl.textContent = `${lives}`;
-        quizData = yield loadQuiz(category, mode); // fonction qui retourne un tableau d’objets questions
-        console.log(quizData);
-        console.log(quizData[currentQuestionIndex]);
-        if (quizData.length === 0 && quizMessage !== null) {
-            quizMessage.innerHTML = "<p>Aucune question disponible pour cette catégorie.</p>";
-            return;
-        }
-        (_a = document.getElementById("home")) === null || _a === void 0 ? void 0 : _a.classList.add("hidden"); // cacher la page d’accueil
-        (_b = document.getElementById("quizPage")) === null || _b === void 0 ? void 0 : _b.classList.remove("hidden"); // montrer la page du quiz
-        showQuestion(quizData[currentQuestionIndex]); //   Afficher la première question
-    });
+async function startQuiz(category = "culture", mode = "sequentiel") {
+    // 1. Réinitialiser l’état du quiz
+    //currentQuestionIndex = 0;
+    console.log("index question à quiz actuelle" + currentQuestionIndex);
+    score = 0;
+    lives = 3; // ou configurable*
+    currentCategory = category; // ← mémoriser
+    if (scoreEl !== null)
+        scoreEl.textContent = `${score}`;
+    if (livesEl !== null)
+        livesEl.textContent = `${lives}`;
+    quizData = await loadQuiz(category, mode); // fonction qui retourne un tableau d’objets questions
+    console.log(quizData);
+    console.log(quizData[currentQuestionIndex]);
+    if (quizData.length === 0 && quizMessage !== null) {
+        quizMessage.innerHTML = "<p>Aucune question disponible pour cette catégorie.</p>";
+        return;
+    }
+    document.getElementById("home")?.classList.add("hidden"); // cacher la page d’accueil
+    document.getElementById("quizPage")?.classList.remove("hidden"); // montrer la page du quiz
+    showQuestion(quizData[currentQuestionIndex]); //   Afficher la première question
 }
-function loadQuiz(category, mode) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let questions = [];
-        if (category === "api") {
-            questions = yield fetchQuestionsFromAPI("informatique", 10);
-            console.log(questions);
+async function loadQuiz(category, mode) {
+    let questions = [];
+    if (category === "api") {
+        questions = await fetchQuestionsFromAPI("informatique", 10);
+        console.log(questions);
+    }
+    else {
+        // Fichier JSON importé
+        if (typeof allQuizzes !== "undefined" && allQuizzes[category]) {
+            questions = allQuizzes[category];
+            console.log("quiz exporté");
         }
         else {
-            // Fichier JSON importé
-            if (typeof allQuizzes !== "undefined" && allQuizzes[category]) {
-                questions = allQuizzes[category];
-                console.log("quiz exporté");
-            }
-            else {
-                // Questions locales
-                if (category === "culture")
-                    questions = cultureQuestions;
-                if (category === "informatique")
-                    questions = informatiqueQuestions;
-                if (category === "histoire")
-                    questions = histoireQuestions;
-            }
+            // Questions locales
+            if (category === "culture")
+                questions = cultureQuestions;
+            if (category === "informatique")
+                questions = informatiqueQuestions;
+            if (category === "histoire")
+                questions = histoireQuestions;
         }
-        // Gestion du mode de jeu
-        if (mode === "aleatoire") {
-            return shuffle([...questions]); // mélange si mode aléatoire
-        }
-        return [...questions]; // séquentiel → ordre défini
-    });
+    }
+    // Gestion du mode de jeu
+    if (mode === "aleatoire") {
+        return shuffle([...questions]); // mélange si mode aléatoire
+    }
+    return [...questions]; // séquentiel → ordre défini
 }
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -150,40 +138,38 @@ function startTimer() {
         }
     }, 1000);
 }
-function fetchQuestionsFromAPI() {
-    return __awaiter(this, arguments, void 0, function* (category = "general", amount = 5) {
-        let url = `https://opentdb.com/api.php?amount=${amount}&type=multiple`;
-        if (category === "informatique")
-            url = `https://opentdb.com/api.php?amount=${amount}&category=18&type=multiple`;
-        if (category === "histoire")
-            url = `https://opentdb.com/api.php?amount=${amount}&category=23&type=multiple`;
-        try {
-            const res = yield fetch(url);
-            const data = yield res.json();
-            // Transformer les questions de l’API au format de ton appli
-            return data.results.map((q) => {
-                const options = [...q.incorrect_answers, q.correct_answer];
-                // Mélanger les options
-                for (let i = options.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [options[i], options[j]] = [options[j], options[i]];
-                }
-                return {
-                    type: q.type === "boolean" ? "vf" : "qcm",
-                    question: q.question,
-                    options: options,
-                    // answer: [options.indexOf(q.correct_answer)]
-                    answer: q.type === "boolean"
-                        ? q.correct_answer.toLowerCase() === "true"
-                        : [options.indexOf(q.correct_answer)]
-                };
-            });
-        }
-        catch (err) {
-            console.error("Erreur API", err);
-            return [];
-        }
-    });
+async function fetchQuestionsFromAPI(category = "general", amount = 5) {
+    let url = `https://opentdb.com/api.php?amount=${amount}&type=multiple`;
+    if (category === "informatique")
+        url = `https://opentdb.com/api.php?amount=${amount}&category=18&type=multiple`;
+    if (category === "histoire")
+        url = `https://opentdb.com/api.php?amount=${amount}&category=23&type=multiple`;
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+        // Transformer les questions de l’API au format de ton appli
+        return data.results.map((q) => {
+            const options = [...q.incorrect_answers, q.correct_answer];
+            // Mélanger les options
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            return {
+                type: q.type === "boolean" ? "vf" : "qcm",
+                question: q.question,
+                options: options,
+                // answer: [options.indexOf(q.correct_answer)]
+                answer: q.type === "boolean"
+                    ? q.correct_answer.toLowerCase() === "true"
+                    : [options.indexOf(q.correct_answer)]
+            };
+        });
+    }
+    catch (err) {
+        console.error("Erreur API", err);
+        return [];
+    }
 }
 function nextQuestionAfterDelay() {
     setTimeout(() => {
@@ -211,10 +197,10 @@ function checkAnswer(e) {
     //     isCorrect = (selected === "true") === q?.answer;
     // }
     let isCorrect = false;
-    if ((q === null || q === void 0 ? void 0 : q.type) === "qcm" && selected != null) {
+    if (q?.type === "qcm" && selected != null) {
         isCorrect = Number(selected) === q.answer[0]; // ✅ plus d’erreur
     }
-    else if ((q === null || q === void 0 ? void 0 : q.type) === "vf" && selected != null) {
+    else if (q?.type === "vf" && selected != null) {
         isCorrect = (selected === "true") === q.answer; // ✅
     }
     // Feedback gestion
@@ -231,11 +217,11 @@ function checkAnswer(e) {
         lives--;
         target.classList.add("wrong");
         let bonneReponse;
-        if ((q === null || q === void 0 ? void 0 : q.type) === "qcm") {
+        if (q?.type === "qcm") {
             bonneReponse = q.answer[0];
         }
-        else if ((q === null || q === void 0 ? void 0 : q.type) === "vf") {
-            bonneReponse = q === null || q === void 0 ? void 0 : q.answer;
+        else if (q?.type === "vf") {
+            bonneReponse = q?.answer;
         }
         if (feedbackEl) {
             feedbackEl.textContent = `❌ Mauvaise réponse. La bonne réponse était : ${bonneReponse}`;
@@ -335,8 +321,6 @@ function saveScore(playerName, score, category) {
     localStorage.setItem("quizScores", JSON.stringify(top10));
 }
 function showStats() {
-    var _a;
-    var _b;
     const container = document.getElementById("quizContainer");
     if (!container)
         return;
@@ -348,15 +332,15 @@ function showStats() {
         return;
     }
     // petit helper pour éviter les surprises avec innerHTML
-    const esc = (s) => String(s !== null && s !== void 0 ? s : "").replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     // grouper par catégorie
     const grouped = {};
     for (const s of scores) {
-        (grouped[_b = s.category] || (grouped[_b] = [])).push(s);
+        (grouped[s.category] ||= []).push(s);
     }
     // trier chaque groupe du meilleur au moins bon (optionnel)
     for (const cat in grouped) {
-        (_a = grouped[cat]) === null || _a === void 0 ? void 0 : _a.sort((a, b) => b.score - a.score);
+        grouped[cat]?.sort((a, b) => b.score - a.score);
     }
     // construire le HTML (simple)
     let statsHTML = "<h3>Statistiques par catégorie :</h3>";
@@ -405,9 +389,8 @@ function exportQuiz() {
     dlAnchor.click();
 }
 function importQuiz(event) {
-    var _a;
     const input = event.target;
-    const file = (_a = input.files) === null || _a === void 0 ? void 0 : _a[0];
+    const file = input.files?.[0];
     // const file = event.target.files[0];
     if (!file) {
         alert("Aucun fichier sélectionné !");
@@ -415,9 +398,8 @@ function importQuiz(event) {
     }
     const reader = new FileReader();
     reader.onload = function (e) {
-        var _a;
         try {
-            const result = (_a = e.target) === null || _a === void 0 ? void 0 : _a.result;
+            const result = e.target?.result;
             const importedData = JSON.parse(result);
             // const importedData = JSON.parse(e.target.result);
             // Stocke dans une variable globale

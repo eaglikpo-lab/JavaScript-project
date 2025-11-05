@@ -1,12 +1,4 @@
-// interface Question {
-//     question: string;
-//     type: "qcm" | "vf";
-//     options?: string[];
-//     answer: string | boolean;
-//     // autres champs selon ton JSON : id, catégorie, etc.
-// }
-
-import { Question } from "./main";
+import type { Question } from "./main";
 
 const editorBtn = document.getElementById("editorBtn") as HTMLButtonElement;
 const retour = document.getElementById("backBtn") as HTMLButtonElement;

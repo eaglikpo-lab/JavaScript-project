@@ -1,10 +1,3 @@
-// interface Question {
-//     question: string;
-//     type: "qcm" | "vf";
-//     options?: string[];
-//     answer: string | boolean;
-//     // autres champs selon ton JSON : id, catégorie, etc.
-// }
 const editorBtn = document.getElementById("editorBtn");
 const retour = document.getElementById("backBtn");
 const editModal = document.getElementById("editorModal");

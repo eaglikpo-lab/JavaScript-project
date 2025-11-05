@@ -1,8 +1,8 @@
-import { informatiqueQuestions } from './data/informatique';
-import { cultureQuestions } from './data/culture';
-import { histoireQuestions } from './data/histoire';
+import { informatiqueQuestions } from './data/informatique.js';
+import { cultureQuestions } from './data/culture.js';
+import { histoireQuestions } from './data/histoire.js';
 
-
+console.log(informatiqueQuestions);
 // export interface Question {
 //     question: string;
 //     type: "qcm" | "vf";
@@ -53,6 +53,8 @@ const livesEl = document.getElementById("lives") as HTMLElement | null;
 
 const startBtn = document.getElementById("startBtn") as HTMLButtonElement;
 startBtn.addEventListener("click", () => {
+    console.log("click");
+    
     const categoryInp = document.getElementById("category") as HTMLSelectElement;
     const category = categoryInp.value;
 
