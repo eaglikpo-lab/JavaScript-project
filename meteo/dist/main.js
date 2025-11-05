@@ -1,10 +1,7 @@
 import { saveToCache, getFromCache, getSmartCache } from "./FA.js";
-// import { Chart } from "chart.js";
-// import { Chart, registerables } from "chart.js";
-// Chart.register(...registerables);
 const apiKey = "ea5d0fdaeac747502f8d70675c7c011b"; // à remplacer par ta clé OpenWeather
-let tempChart;
-let precipChart;
+let tempChart = null;
+let precipChart = null;
 // --- Fonction principale ---
 async function Weather(data) {
     if (data.cod === "200") {
@@ -205,11 +202,12 @@ async function displayWeather(city) {
         });
         const temperatures = forecast.map((item) => item.main.temp);
         const precipitations = forecast.map((item) => item.pop * 100); // % probabilité pluie
-        if (tempChart || precipChart) {
-            tempChart.destroy();
-            precipChart.destroy();
-        }
-        /*// === Graphique Température ===
+        /* if (tempChart || precipChart) {
+           tempChart.destroy();
+           precipChart.destroy();
+         }
+     
+        // === Graphique Température ===
          tempChart = new Chart(document.getElementById("tempChart"), {
            type: "line",
            data: {
@@ -239,6 +237,37 @@ async function displayWeather(city) {
            },
            options: { responsive: true, plugins: { legend: { display: true } }, scales: { y: { beginAtZero: true, max: 100 } } }
          });*/
+        const tempCanvas = document.getElementById("tempChart");
+        const precipCanvas = document.getElementById("precipChart");
+        tempChart?.destroy();
+        precipChart?.destroy();
+        tempChart = new Chart(tempCanvas, {
+            type: "line",
+            data: {
+                labels: hours,
+                datasets: [{
+                        label: "Température (°C)",
+                        data: temperatures,
+                        borderColor: "red",
+                        backgroundColor: "rgba(255,0,0,0.2)",
+                        fill: true,
+                        tension: 0.3
+                    }]
+            },
+            options: { responsive: true, plugins: { legend: { display: true } } }
+        });
+        precipChart = new Chart(precipCanvas, {
+            type: "bar",
+            data: {
+                labels: hours,
+                datasets: [{
+                        label: "Précipitations (%)",
+                        data: precipitations,
+                        backgroundColor: "rgba(0,123,255,0.6)"
+                    }]
+            },
+            options: { responsive: true, plugins: { legend: { display: true } }, scales: { y: { beginAtZero: true, max: 100 } } }
+        });
     }
     catch (error) {
         console.error("Erreur dans displayWeather :", error);

@@ -1,12 +1,11 @@
 import { saveToCache, getFromCache, getSmartCache } from "./FA.js";
-// import { Chart } from "chart.js";
-// import { Chart, registerables } from "chart.js";
-// Chart.register(...registerables);
+
+declare const Chart: any; // vite fait pour compiler sans changer le build
 
 
 const apiKey: string = "ea5d0fdaeac747502f8d70675c7c011b"; // à remplacer par ta clé OpenWeather
-let tempChart: any;
-let precipChart: any;
+let tempChart: any | null = null;
+let precipChart: any | null = null;
 
 // --- Types des données OpenWeather ---
 interface WeatherMain {
@@ -81,7 +80,7 @@ async function Weather(data: ForecastData): Promise<ForecastData | void> {
 
       // --- Icône météo ---
       if (current.weather[0]) (document.getElementById("weatherIcon") as HTMLElement).textContent = getWeatherIcon(current.weather[0].main);
-      
+
       // --- Alertes météo ---
       displayAlerts(lat, lon);
       addHistory(data.city.name);
@@ -255,7 +254,7 @@ async function displayWeather(city: string) {
 
     displayForecast(weather); // prévision sur 5 jours
 
-   // --- Prévisions 24h ---
+    // --- Prévisions 24h ---
     const forecast = weather.list.slice(0, 8); // 8 * 3h = 24h  40=5jours
     const hours = forecast.map((item: any) => {
       const date = new Date(item.dt * 1000);
@@ -264,13 +263,13 @@ async function displayWeather(city: string) {
     const temperatures = forecast.map((item: any) => item.main.temp);
     const precipitations = forecast.map((item: any) => item.pop * 100); // % probabilité pluie
 
-    if (tempChart || precipChart) {
-      tempChart.destroy();
-      precipChart.destroy();
-    }
+    const tempCanvas = document.getElementById("tempChart") as HTMLCanvasElement;
+    const precipCanvas = document.getElementById("precipChart") as HTMLCanvasElement;
 
-   /*// === Graphique Température ===
-    tempChart = new Chart(document.getElementById("tempChart"), {
+    tempChart?.destroy();
+    precipChart?.destroy();
+
+    tempChart = new Chart(tempCanvas, { /* config */
       type: "line",
       data: {
         labels: hours,
@@ -285,9 +284,7 @@ async function displayWeather(city: string) {
       },
       options: { responsive: true, plugins: { legend: { display: true } } }
     });
-
-    // === Graphique Précipitations ===
-    precipChart = new Chart(document.getElementById("precipChart"), {
+    precipChart = new Chart(precipCanvas, { /* config */
       type: "bar",
       data: {
         labels: hours,
@@ -298,8 +295,7 @@ async function displayWeather(city: string) {
         }]
       },
       options: { responsive: true, plugins: { legend: { display: true } }, scales: { y: { beginAtZero: true, max: 100 } } }
-    });*/
-
+    });
   } catch (error) {
     console.error("Erreur dans displayWeather :", error);
   }
@@ -308,7 +304,7 @@ async function displayWeather(city: string) {
 async function displayAlerts(lat: number, lon: number) {
   const alertsContainer = document.getElementById("alerts") as HTMLElement;
   console.log(lat, lon);
-  
+
   try {
     // Simulation d'une fausse alerte pour tester l’UI
     const fakeAlert = {
